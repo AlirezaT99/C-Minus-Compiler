@@ -9,7 +9,7 @@ class Scanner:
 
     @staticmethod
     def get_next_token():
-        return (), True
+        return ()
 
     @staticmethod
     def read_all_tokens():
@@ -17,7 +17,11 @@ class Scanner:
             Scanner.lines = [line.strip() for line in f.readlines()]
 
         while True:
-            token, eof = Scanner.get_next_token()
-            if eof:
+            if Scanner.eof_reached():
                 break
-            tokens.add(token)
+            tokens.add(Scanner.get_next_token())
+
+    @staticmethod
+    def eof_reached():  # TODO mind that line_number and cursor start from 0 not 1
+        return Scanner.line_number >= len(Scanner.lines) \
+               and Scanner.cursor >= len(Scanner.lines[-1])
