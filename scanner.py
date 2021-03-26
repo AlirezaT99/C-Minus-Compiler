@@ -3,13 +3,45 @@ from utils import *
 
 
 class Scanner:
+    lines = None
+
     line_number = 0
     cursor = 0
-    lines = None
+    STATE = 0  # 0 in DFA
 
     @staticmethod
     def get_next_token():
-        return ()
+        if Scanner.cursor == len(Scanner.lines[Scanner.line_number]):
+            Scanner.cursor = 0
+            Scanner.line_number += 1  # EOF is checked already
+
+        # lexeme_beginning = (Scanner.line_number, Scanner.cursor)
+        line = Scanner.lines[Scanner.line_number]
+        char = line[Scanner.cursor]
+
+        if char in [' ', '\t', '\n', '\r', '\v', '\f']:  # WHITESPACE
+            pass  # TODO
+
+        elif char in [';', ':', ',', '[', ']', '(', ')', '{', '}', '+', '-', '*', '=', '<']:  # SYMBOL
+            if char == '=':
+                if Scanner.cursor < len(line) - 1 and line[Scanner.cursor + 1] == '=':  # ==
+                    Scanner.cursor += 2
+                    return Scanner.line_number, 'SYMBOL', '=='
+            Scanner.cursor += 1
+            return Scanner.line_number, 'SYMBOL', char
+
+        elif char.isdigit():  # NUM
+            pass  # TODO
+
+        elif char.isalnum():  # ID / KEYWORD
+            pass  # TODO
+
+        elif char == '/':  # COMMENT
+            pass  # TODO
+
+        else:  # invalid
+            lexical_errors.append((Scanner.line_number, char, 'Invalid input'))
+            Scanner.cursor += 1
 
     @staticmethod
     def read_all_tokens():
