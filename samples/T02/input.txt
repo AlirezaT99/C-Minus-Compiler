@@ -1,0 +1,13 @@
+void main(void){
+	int prod;
+	int i;
+		prod = 1;
+		i = 1;
+	for i = 7, 3, 25 {
+		prod = i * prod ;
+		i = i + 2;
+	}
+		output(prod);
+		return;
+
+}
