@@ -13,7 +13,8 @@ def run_compiler():
 
 
 INPUT_PATH = './input.txt'
-symbol_table = dict()
+symbol_table = dict()  # only keys are used for now
+lexical_errors = list()  # (line_no, lexeme, error_type)
 
 if __name__ == '__main__':
     # INPUT_PATH = sys.argv[-1] if len(sys.argv) > 1 else input()
