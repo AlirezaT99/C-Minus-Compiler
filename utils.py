@@ -5,8 +5,9 @@ tokens = list()
 
 def init_symbol_table():
     symbol_table.update(
-        {'if': None, 'else': None, 'void': None, 'int': None, 'while': None, 'break': None, 'switch': None,
-         'default': None, 'case': None, 'return': None, 'for': None})
+        {'keywords': ['if', 'else', 'void', 'int', 'while', 'break', 'switch',
+                      'default', 'case', 'return', 'for'],
+         'ids': list()})
 
 
 def save_errors():
@@ -22,4 +23,6 @@ def save_symbol_table():
 
 
 def save_tokens():
-    pass
+    with open('tokens.txt', 'w') as f:
+        for idx, token in enumerate(tokens):
+            f.write(f'{idx + 1}.\t{token}\n')
