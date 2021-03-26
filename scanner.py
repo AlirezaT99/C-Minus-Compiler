@@ -8,7 +8,7 @@ class Scanner:
     lines = None
 
     @staticmethod
-    def get_next_token(lines):
+    def get_next_token():
         return (), True
 
     @staticmethod
@@ -21,4 +21,3 @@ class Scanner:
             if eof:
                 break
             tokens.add(token)
-
