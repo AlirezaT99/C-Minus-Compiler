@@ -2,20 +2,16 @@
         - Alireza Tajmirriahi - 97101372
         - Erfan Faravani - 97102174
 """
-import sys
-import scanner
+from scanner import Scanner
 import utils
 
 
 def run_compiler():
-    utils.init_symbol_table(symbol_table)
-    scanner.read_all_tokens(INPUT_PATH)
+    utils.init_symbol_table()
+    Scanner.read_all_tokens()
 
 
-INPUT_PATH = './input.txt'
-symbol_table = dict()  # only keys are used for now
-lexical_errors = list()  # (line_no, lexeme, error_type)
+INPUT_PATH = './samples/T01/input.txt'
 
 if __name__ == '__main__':
-    # INPUT_PATH = sys.argv[-1] if len(sys.argv) > 1 else input()
     run_compiler()
