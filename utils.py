@@ -14,7 +14,10 @@ def init_symbol_table():
 
 def save_errors():
     with open('lexical_errors.txt', 'w') as f:
-        f.write('\n'.join([f'{err[0] + 1}.\t({err[1]}, {err[2]})' for err in lexical_errors]))
+        if lexical_errors:
+            f.write('\n'.join([f'{err[0] + 1}.\t({err[1]}, {err[2]})' for err in lexical_errors]))
+        else:
+            f.write('There is no lexical error.')
 
 
 def save_symbol_table():
