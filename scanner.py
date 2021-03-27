@@ -125,6 +125,7 @@ class Scanner:
                         self.cursor += 2
                         return lexeme + '*/', False
                 else:
+                    lexeme += self.lines[-1]
                     self.cursor += 1
                     lexical_errors[beginning_line_number].append((get_short_comment(lexeme), 'Unclosed comment'))
                     return None, True
@@ -148,7 +149,7 @@ class Scanner:
 
             if temp_type == TokenType.NUM or temp_type == TokenType.ID_OR_KEYWORD:
                 name += temp_char
-            elif temp_type == TokenType.WHITESPACE or temp_type == TokenType.SYMBOL:  # TODO sure?
+            elif temp_type == TokenType.WHITESPACE or temp_type == TokenType.SYMBOL:
                 return name, False
             else:
                 name += temp_char
@@ -167,7 +168,7 @@ class Scanner:
 
             if temp_type == TokenType.NUM:
                 num += temp_char
-            elif temp_type == TokenType.WHITESPACE or temp_type == TokenType.SYMBOL:  # TODO what about /
+            elif temp_type == TokenType.WHITESPACE or temp_type == TokenType.SYMBOL:
                 return num, False
             else:
                 num += temp_char
