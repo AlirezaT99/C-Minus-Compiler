@@ -58,7 +58,7 @@ class Scanner:
             if char == '\n':
                 self.line_number += 1
             self.cursor += 1
-            return self.get_next_token()
+            return self.get_next_token()  # could result in a stack overflow :?
 
         elif token_type == TokenType.SYMBOL:
             if char == '=':
@@ -142,7 +142,7 @@ class Scanner:
             token = self.get_next_token()
             if token:
                 tokens[token[0]].append(token[1:])
-                print(token)
+                # print(token)
 
-    def eof_reached(self):  # TODO mind that cursor start from 0 not 1
+    def eof_reached(self):
         return self.cursor >= len(self.lines)
