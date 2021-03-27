@@ -55,7 +55,7 @@ class Scanner:
         token_type = get_token_type(char)
 
         if token_type == TokenType.WHITESPACE:
-            if char == '\n':  # Never happens
+            if char == '\n':
                 self.line_number += 1
             self.cursor += 1
             return self.get_next_token()
@@ -93,7 +93,7 @@ class Scanner:
 
     def find_id_or_keyword(self):
         name = self.get_current_char()
-        while self.cursor + 1 < len(self.lines[self.line_number]):
+        while self.cursor + 1 < len(self.lines):
             self.cursor += 1
             temp_char = self.get_current_char()
             temp_type = get_token_type(temp_char)
@@ -113,7 +113,7 @@ class Scanner:
 
     def number_token(self):
         num = self.get_current_char()
-        while self.cursor + 1 < len(self.lines[self.line_number]):
+        while self.cursor + 1 < len(self.lines):
             self.cursor += 1
             temp_char = self.get_current_char()
             temp_type = get_token_type(temp_char)
