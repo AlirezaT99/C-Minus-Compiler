@@ -111,8 +111,6 @@ class Scanner:
             return None, True
 
         is_multiline = next_char == '*'
-        # if is_multiline and '*/' not in self.lines[self.cursor + 1:]:
-        #     lexical_errors.append((self.line_number, get_short_comment(lexeme), 'Unclosed comment'))
 
         while self.cursor + 1 < len(self.lines):
             self.cursor += 1
@@ -190,7 +188,6 @@ class Scanner:
             token = self.get_next_token()
             if token:
                 tokens[token[0]].append(token[1:])
-                # print(token)
 
     def eof_reached(self):
         return self.cursor >= len(self.lines)

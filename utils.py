@@ -14,20 +14,16 @@ def init_symbol_table():
 
 def save_errors():
     with open('lexical_errors.txt', 'w') as f:
-        for err in lexical_errors:
-            f.write(f'{err[0] + 1}.\t({err[1]}, {err[2]})\n')
+        f.write('\n'.join([f'{err[0] + 1}.\t({err[1]}, {err[2]})' for err in lexical_errors]))
 
 
 def save_symbol_table():
     with open('symbol_table.txt', 'w') as f:
-        for idx, symbol in enumerate(symbol_table['keywords'] + symbol_table['ids']):
-            f.write(f'{idx + 1}.\t{symbol}\n')
+        f.write('\n'.join(
+            [f'{idx + 1}.\t{symbol}' for idx, symbol in enumerate(symbol_table['keywords'] + symbol_table['ids'])]))
 
 
 def save_tokens():
     with open('tokens.txt', 'w') as f:
-        for line_no, line_tokens in tokens.items():
-            f.write(f'{line_no + 1}.\t')
-            for token in line_tokens:
-                f.write(f'({token[0]}, {token[1]}) ')
-            f.write('\n')
+        f.write('\n'.join([f'{line_no + 1}.\t' + ' '.join([f'({token[0]}, {token[1]})' for token in line_tokens])
+                           for line_no, line_tokens in tokens.items()]))
