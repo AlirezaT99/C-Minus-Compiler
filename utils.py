@@ -1,7 +1,7 @@
 from collections import defaultdict
 
 symbol_table = dict()  # only keys are used for now
-lexical_errors = list()  # (line_no, lexeme, error_type)
+lexical_errors = defaultdict(list)  # {line_no: [lexeme, error_type]}
 tokens = defaultdict(list)  # {line_no: [(type, lexeme),]}
 
 
@@ -15,7 +15,8 @@ def init_symbol_table():
 def save_errors():
     with open('lexical_errors.txt', 'w') as f:
         if lexical_errors:
-            f.write('\n'.join([f'{err[0] + 1}.\t({err[1]}, {err[2]})' for err in lexical_errors]))
+            f.write('\n'.join([f'{line_no + 1}.\t' + ' '.join([f'({err[0]}, {err[1]})' for err in line_errors])
+                               for line_no, line_errors in lexical_errors.items()]))
         else:
             f.write('There is no lexical error.')
 

@@ -71,7 +71,7 @@ class Scanner:
                 if self.cursor < len(self.lines) - 1 \
                         and self.lines[self.cursor + 1] == '/':
                     self.cursor += 2
-                    lexical_errors.append((self.line_number, '*/', 'Unmatched comment'))
+                    lexical_errors[self.line_number].append(('*/', 'Unmatched comment'))
                     return False
             self.cursor += 1
             return self.line_number, TokenType.SYMBOL, char
@@ -80,19 +80,19 @@ class Scanner:
             number, has_error = self.number_token()
             if not has_error:
                 return self.line_number, TokenType.NUM, number
-            lexical_errors.append((self.line_number, number, 'Invalid number'))
+            lexical_errors[self.line_number].append((number, 'Invalid number'))
 
         elif token_type == TokenType.ID_OR_KEYWORD:
             name, has_error = self.find_id_or_keyword()
             if not has_error:
                 return self.line_number, get_from_table(name), name
-            lexical_errors.append((self.line_number, name, 'Invalid input'))
+            lexical_errors[self.line_number].append((name, 'Invalid input'))
 
         elif token_type == TokenType.COMMENT:
             self.find_comment()
 
         elif token_type == TokenType.INVALID:
-            lexical_errors.append((self.line_number, char, 'Invalid input'))
+            lexical_errors[self.line_number].append((char, 'Invalid input'))
             self.cursor += 1
 
     def find_comment(self):
@@ -100,13 +100,13 @@ class Scanner:
 
         lexeme = self.get_current_char()
         if self.cursor + 1 == len(self.lines):
-            lexical_errors.append((self.line_number, lexeme, 'Invalid input'))  # last char is /
+            lexical_errors[self.line_number].append((lexeme, 'Invalid input'))  # last char is /
             self.cursor += 1
             return None, True
 
         next_char = self.lines[self.cursor + 1]
         if next_char not in ['/', '*']:
-            lexical_errors.append((self.line_number, lexeme, 'Invalid input'))  # /
+            lexical_errors[self.line_number].append((lexeme, 'Invalid input'))  # /
             self.cursor += 1
             return None, True
 
@@ -126,7 +126,7 @@ class Scanner:
                         return lexeme + '*/', False
                 else:
                     self.cursor += 1
-                    lexical_errors.append((beginning_line_number, get_short_comment(lexeme), 'Unclosed comment'))
+                    lexical_errors[beginning_line_number].append((get_short_comment(lexeme), 'Unclosed comment'))
                     return None, True
 
             if temp_char == '\n':
@@ -157,7 +157,6 @@ class Scanner:
 
         self.cursor += 1
         return name, False
-        # print('error handling for keys',self.cursor,len(self.lines),self.get_current_char(),self.eof_reached())
 
     def number_token(self):
         num = self.get_current_char()
