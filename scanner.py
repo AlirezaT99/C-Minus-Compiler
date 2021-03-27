@@ -1,15 +1,15 @@
 from utils import *
 
 
-class TokenType(enumerate):
-    SYMBOL = "SYMBOL"
-    NUM = "NUM"
-    ID = "ID"
-    KEYWORD = "KEYWORD"
-    COMMENT = "COMMENT"
-    WHITESPACE = "WHITESPACE"
-    ID_OR_KEYWORD = "ID_OR_KEYWORD"
-    INVALID = "Invalid input"
+class TokenType:
+    SYMBOL = 'SYMBOL'
+    NUM = 'NUM'
+    ID = 'ID'
+    KEYWORD = 'KEYWORD'
+    COMMENT = 'COMMENT'
+    WHITESPACE = 'WHITESPACE'
+    ID_OR_KEYWORD = 'ID_OR_KEYWORD'
+    INVALID = 'Invalid input'
 
 
 def get_token_type(char):
@@ -21,21 +21,18 @@ def get_token_type(char):
         return TokenType.NUM
     elif char.isalnum():  # ID / KEYWORD
         return TokenType.ID_OR_KEYWORD
-    elif char == '/':  # COMMENT
+    elif char == '/':  # COMMENT (potentially)
         return TokenType.COMMENT
-    else:  # invalid
+    else:  # Invalid input
         return TokenType.INVALID
 
 
 def get_from_table(name):
     if name in symbol_table['keywords']:
         return TokenType.KEYWORD
-    elif name in symbol_table['ids']:
-        return TokenType.ID
     else:
-        ids = symbol_table['ids']
-        ids.append(name)
-        symbol_table.update({'ids': ids})
+        if name not in symbol_table['ids']:
+            symbol_table['ids'].append(name)
         return TokenType.ID
 
 
@@ -47,7 +44,7 @@ class Scanner:
         self.line_number = 0
         self.cursor = 0
 
-        self.current_token = ""
+        self.current_token = ''
         self.STATE = 0  # 0 in DFA
 
     def get_next_token(self):
@@ -58,7 +55,7 @@ class Scanner:
         token_type = get_token_type(char)
 
         if token_type == TokenType.WHITESPACE:
-            if char == '\n':
+            if char == '\n':  # Never happens
                 self.line_number += 1
             self.cursor += 1
             return self.get_next_token()
@@ -76,14 +73,13 @@ class Scanner:
             number, has_error = self.number_token()
             if not has_error:
                 return self.line_number, TokenType.NUM, number
-            lexical_errors.append((self.line_number, char, 'Invalid number'))
+            lexical_errors.append((self.line_number, number, 'Invalid number'))
 
         elif token_type == TokenType.ID_OR_KEYWORD:
             name, has_error = self.find_id_or_keyword()
             if not has_error:
-                type = get_from_table(name)
-                return self.line_number, type, name
-            lexical_errors.append((self.line_number, char, 'Invalid number'))
+                return self.line_number, get_from_table(name), name
+            lexical_errors.append((self.line_number, name, 'Invalid number'))  # number ??
 
         elif token_type == TokenType.COMMENT:
             pass
@@ -93,34 +89,31 @@ class Scanner:
             self.cursor += 1
 
     def get_current_char(self):
-        char = self.lines[self.cursor]
-        return char
+        return self.lines[self.cursor]
 
     def find_id_or_keyword(self):
         name = self.get_current_char()
-        while self.cursor + 1 < len(self.lines):
+        while self.cursor + 1 < len(self.lines[self.line_number]):
             self.cursor += 1
             temp_char = self.get_current_char()
             temp_type = get_token_type(temp_char)
 
             if temp_type == TokenType.NUM or temp_type == TokenType.ID_OR_KEYWORD:
                 name += temp_char
-
-            elif temp_type == TokenType.WHITESPACE or temp_type == TokenType.SYMBOL:
-
+            elif temp_type == TokenType.WHITESPACE or temp_type == TokenType.SYMBOL:  # TODO sure?
                 return name, False
-
             else:
                 name += temp_char
                 self.cursor += 1
                 return name, True
+
         self.cursor += 1
         return name, False
         # print('error handling for keys',self.cursor,len(self.lines),self.get_current_char(),self.eof_reached())
 
     def number_token(self):
         num = self.get_current_char()
-        while self.cursor + 1 < len(self.lines):
+        while self.cursor + 1 < len(self.lines[self.line_number]):
             self.cursor += 1
             temp_char = self.get_current_char()
             temp_type = get_token_type(temp_char)
@@ -128,7 +121,7 @@ class Scanner:
             if temp_type == TokenType.NUM:
                 num += temp_char
 
-            elif temp_type == TokenType.WHITESPACE or temp_type == TokenType.SYMBOL:
+            elif temp_type == TokenType.WHITESPACE or temp_type == TokenType.SYMBOL:  # TODO what about /
                 return num, False
 
             else:
@@ -141,17 +134,15 @@ class Scanner:
 
     def read_all_tokens(self):
         with open(self.input_path, 'r') as f:
-            self.lines = "".join([line for line in f.readlines()])
+            self.lines = ''.join([line for line in f.readlines()])
 
         while True:
             if self.eof_reached():
                 break
             token = self.get_next_token()
             if token:
+                tokens[token[0]].append(token[1:])
                 print(token)
 
     def eof_reached(self):  # TODO mind that cursor start from 0 not 1
         return self.cursor >= len(self.lines)
-
-# s = Scanner('input.txt')
-# s.read_all_tokens()
