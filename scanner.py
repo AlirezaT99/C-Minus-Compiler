@@ -79,7 +79,7 @@ class Scanner:
             name, has_error = self.find_id_or_keyword()
             if not has_error:
                 return self.line_number, get_from_table(name), name
-            lexical_errors.append((self.line_number, name, 'Invalid number'))  # number ??
+            lexical_errors.append((self.line_number, name, 'Invalid input'))
 
         elif token_type == TokenType.COMMENT:
             pass
