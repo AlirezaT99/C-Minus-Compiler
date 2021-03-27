@@ -15,7 +15,7 @@ def run_compiler():
     utils.save_tokens()
 
 
-INPUT_PATH = 'input.txt'
+INPUT_PATH = './samples/T01/input.txt'
 
 if __name__ == '__main__':
     run_compiler()

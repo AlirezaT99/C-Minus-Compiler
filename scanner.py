@@ -36,6 +36,10 @@ def get_from_table(name):
         return TokenType.ID
 
 
+def get_short_comment(comment):
+    return comment[:7] + '...' if len(comment) >= 7 else comment
+
+
 class Scanner:
     def __init__(self, input_path):
         self.input_path = input_path
@@ -43,9 +47,6 @@ class Scanner:
 
         self.line_number = 0
         self.cursor = 0
-
-        self.current_token = ''
-        self.STATE = 0  # 0 in DFA
 
     def get_next_token(self):
         if self.eof_reached():
@@ -66,6 +67,12 @@ class Scanner:
                         and self.lines[self.cursor + 1] == '=':
                     self.cursor += 2
                     return self.line_number, TokenType.SYMBOL, '=='
+            elif char == '*':
+                if self.cursor < len(self.lines) - 1 \
+                        and self.lines[self.cursor + 1] == '/':
+                    self.cursor += 2
+                    lexical_errors.append((self.line_number, '*/', 'Unmatched comment'))
+                    return False
             self.cursor += 1
             return self.line_number, TokenType.SYMBOL, char
 
@@ -82,11 +89,54 @@ class Scanner:
             lexical_errors.append((self.line_number, name, 'Invalid input'))
 
         elif token_type == TokenType.COMMENT:
-            pass
+            self.find_comment()
 
         elif token_type == TokenType.INVALID:
             lexical_errors.append((self.line_number, char, 'Invalid input'))
             self.cursor += 1
+
+    def find_comment(self):
+        beginning_line_number = self.line_number
+
+        lexeme = self.get_current_char()
+        if self.cursor + 1 == len(self.lines):
+            lexical_errors.append((self.line_number, lexeme, 'Invalid input'))  # last char is /
+            self.cursor += 1
+            return None, True
+
+        next_char = self.lines[self.cursor + 1]
+        if next_char not in ['/', '*']:
+            lexical_errors.append((self.line_number, lexeme, 'Invalid input'))  # /
+            self.cursor += 1
+            return None, True
+
+        is_multiline = next_char == '*'
+        # if is_multiline and '*/' not in self.lines[self.cursor + 1:]:
+        #     lexical_errors.append((self.line_number, get_short_comment(lexeme), 'Unclosed comment'))
+
+        while self.cursor + 1 < len(self.lines):
+            self.cursor += 1
+            temp_char = self.get_current_char()
+
+            if temp_char == '\n' and not is_multiline:
+                self.line_number += 1
+                break
+            if is_multiline:
+                if self.cursor + 1 < len(self.lines):
+                    if temp_char == '*' and self.lines[self.cursor + 1] == '/':
+                        self.cursor += 2
+                        return lexeme + '*/', False
+                else:
+                    self.cursor += 1
+                    lexical_errors.append((beginning_line_number, get_short_comment(lexeme), 'Unclosed comment'))
+                    return None, True
+
+            if temp_char == '\n':
+                self.line_number += 1
+            lexeme += temp_char
+
+        self.cursor += 1
+        return lexeme, False
 
     def get_current_char(self):
         return self.lines[self.cursor]
@@ -120,10 +170,8 @@ class Scanner:
 
             if temp_type == TokenType.NUM:
                 num += temp_char
-
             elif temp_type == TokenType.WHITESPACE or temp_type == TokenType.SYMBOL:  # TODO what about /
                 return num, False
-
             else:
                 num += temp_char
                 self.cursor += 1
