@@ -42,11 +42,18 @@ def get_short_comment(comment):
 
 class Scanner:
     def __init__(self, input_path):
+        init_symbol_table()
+        self.read_input()
+
         self.input_path = input_path
         self.lines = None
 
         self.line_number = 0
         self.cursor = 0
+
+    def read_input(self):
+        with open(self.input_path, 'r') as f:
+            self.lines = ''.join([line for line in f.readlines()])
 
     def get_next_token(self):
         if self.eof_reached():
@@ -178,9 +185,6 @@ class Scanner:
         return num, False
 
     def read_all_tokens(self):
-        with open(self.input_path, 'r') as f:
-            self.lines = ''.join([line for line in f.readlines()])
-
         while True:
             if self.eof_reached():
                 break

@@ -12,7 +12,7 @@ def init_symbol_table():
          'ids': []})
 
 
-def save_errors():
+def save_lexical_errors():
     with open('lexical_errors.txt', 'w') as f:
         if lexical_errors:
             f.write('\n'.join([f'{line_no + 1}.\t' + ' '.join([f'({err[0]}, {err[1]})' for err in line_errors])
@@ -31,3 +31,15 @@ def save_tokens():
     with open('tokens.txt', 'w') as f:
         f.write('\n'.join([f'{line_no + 1}.\t' + ' '.join([f'({token[0]}, {token[1]})' for token in line_tokens])
                            for line_no, line_tokens in tokens.items()]))
+
+
+def save_syntax_errors():
+    pass
+
+
+def save_parse_tree():
+    pass
+
+
+def init_grammar():
+    return None
