@@ -106,8 +106,10 @@ class Scanner:
 
         next_char = self.lines[self.cursor + 1]
         if next_char not in ['/', '*']:
-            lexical_errors[self.line_number].append((lexeme, 'Invalid input'))  # /
-            self.cursor += 1
+            lexical_errors[self.line_number].append((lexeme + (next_char if next_char is not '\n' else ''), 'Invalid input'))  # /
+            if next_char is '\n':  # Pure tof to fix the minor bug
+                self.line_number += 1
+            self.cursor += 2
             return None, True
 
         is_multiline = next_char == '*'
