@@ -76,12 +76,12 @@ def init_grammar():
     with open('./assets/predict.txt', 'r') as f:
         for line in f.readlines():
             line_parts = line.strip().split(' ')
-            predict[line_parts[0]] = line_parts[1:]
+            predict[int(line_parts[0])] = line_parts[1:]
     with open('./assets/pa2grammar.txt', 'r') as f:
         for idx, line in enumerate(f.readlines()):
             rhs = line.strip().split('->')[1]  # right-hand side
             grammar[idx + 1] = rhs.strip().split(' ')
-    print(productions)
-    print(first)
-    print(predict)
-    print(grammar)
+    print('productions:', productions)
+    print('first:', first)
+    print('predict:', predict)
+    print('grammar:', grammar)

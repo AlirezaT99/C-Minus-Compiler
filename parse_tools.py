@@ -22,12 +22,23 @@ class Parser:
 
     def run(self):
         self.lookahead = self.get_next_token()
-
-        self.print_tree()
         self.call_procedure(self.root)
+        self.print_tree()
 
-    def call_procedure(self, non_terminal):
-        # productions =
+    def call_procedure(self, non_terminal: Node):
+        for rule_number in utils.productions[non_terminal.name]:
+            if self.lookahead in utils.predict[rule_number]:  # selecting the appropriate production
+                self.call_rule(non_terminal, rule_number)
+                break
+        else:  # is visited when no corresponding production was found
+            if self.lookahead in utils.follow[non_terminal]:
+                if 'EPSILON' not in utils.first[non_terminal]:  # missing T
+                    pass  # TODO print error
+                # TODO exit
+            else:  # illegal character
+                pass  # TODO print error and proceed
+
+    def call_rule(self, parent, rule_number):
         pass
 
     def call_match(self, expected_token):
