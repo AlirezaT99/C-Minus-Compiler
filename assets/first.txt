@@ -1,5 +1,5 @@
-Program int void epsilon
-Declaration-list int void epsilon
+Program int void EPSILON
+Declaration-list int void EPSILON
 Declaration int void
 Declaration-initial int void
 Declaration-prime ; [ (
@@ -7,12 +7,12 @@ Var-declaration-prime ; [
 Fun-declaration-prime (
 Type-specifier int void
 Params int void
-Param-list-void-abtar ID epsilon
-Param-list , epsilon
+Param-list-void-abtar ID EPSILON
+Param-list , EPSILON
 Param int void
-Param-prime [ epsilon
+Param-prime [ EPSILON
 Compound-stmt {
-Statement-list ID ; NUM ( { break if while return for + - epsilon
+Statement-list ID ; NUM ( { break if while return for + - EPSILON
 Statement ID ; NUM ( { break if while return for + -
 Expression-stmt ID ; NUM ( break + -
 Selection-stmt if
@@ -21,32 +21,32 @@ Return-stmt return
 Return-stmt-prime ID ; NUM ( + -
 For-stmt for
 Vars ID
-Var-zegond , epsilon
+Var-zegond , EPSILON
 Var ID
 Expression ID NUM ( + -
-B [ ( = < == + - * epsilon
-H = < == + - * epsilon
+B [ ( = < == + - * EPSILON
+H = < == + - * EPSILON
 Simple-expression-zegond NUM ( + -
-Simple-expression-prime ( < == + - * epsilon
-C < == epsilon
+Simple-expression-prime ( < == + - * EPSILON
+C < == EPSILON
 Relop < ==
 Additive-expression ID NUM ( + -
-Additive-expression-prime ( + - * epsilon
+Additive-expression-prime ( + - * EPSILON
 Additive-expression-zegond NUM ( + -
-D + - epsilon
+D + - EPSILON
 Addop + -
 Term ID NUM ( + -
-Term-prime ( * epsilon
+Term-prime ( * EPSILON
 Term-zegond NUM ( + -
-G * epsilon
+G * EPSILON
 Signed-factor ID NUM ( + -
-Signed-factor-prime ( epsilon
+Signed-factor-prime ( EPSILON
 Signed-factor-zegond NUM ( + -
 Factor ID NUM (
-Var-call-prime [ ( epsilon
-Var-prime [ epsilon
-Factor-prime ( epsilon
+Var-call-prime [ ( EPSILON
+Var-prime [ EPSILON
+Factor-prime ( EPSILON
 Factor-zegond NUM (
-Args ID NUM ( + - epsilon
+Args ID NUM ( + - EPSILON
 Arg-list ID NUM ( + -
-Arg-list-prime , epsilon
+Arg-list-prime , EPSILON
