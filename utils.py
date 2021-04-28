@@ -11,6 +11,7 @@ first = dict()  # {T: [First(T)]}
 follow = dict()  # {T: [Follow(T)]}
 predict = dict()  # {No: [First(Prod(No))]}
 productions = dict()  # {T: [prod numbers]}
+grammar = dict()  # {No: Prod}
 
 
 class TokenType:
@@ -76,4 +77,11 @@ def init_grammar():
         for line in f.readlines():
             line_parts = line.strip().split(' ')
             predict[line_parts[0]] = line_parts[1:]
+    with open('./assets/pa2grammar.txt', 'r') as f:
+        for idx, line in enumerate(f.readlines()):
+            rhs = line.strip().split('->')[1]  # right-hand side
+            grammar[idx + 1] = rhs.strip().split(' ')
+    print(productions)
+    print(first)
     print(predict)
+    print(grammar)
