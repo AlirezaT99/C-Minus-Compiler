@@ -1,10 +1,16 @@
 from collections import defaultdict
+import json
 
-from parser import Parser
+from parse_tools import Parser
 
 symbol_table = dict()  # only keys are used for now
 lexical_errors = defaultdict(list)  # {line_no: [lexeme, error_type]}
 tokens = defaultdict(list)  # {line_no: [(type, lexeme),]}
+
+first = dict()  # {T: [First(T)]}
+follow = dict()  # {T: [Follow(T)]}
+predict = dict()  # {No: [First(Prod(No))]}
+productions = dict()  # {T: [prod numbers]}
 
 
 class TokenType:
@@ -56,4 +62,18 @@ def save_parse_tree(parser: Parser):
 
 
 def init_grammar():
-    return None
+    with open('./assets/non_terminals_lines.json', 'r') as f:
+        productions.update(json.load(f))
+    with open('./assets/first.txt', 'r') as f:
+        for line in f.readlines():
+            line_parts = line.strip().split(' ')
+            first[line_parts[0]] = line_parts[1:]
+    with open('./assets/follow.txt', 'r') as f:
+        for line in f.readlines():
+            line_parts = line.strip().split(' ')
+            follow[line_parts[0]] = line_parts[1:]
+    with open('./assets/predict.txt', 'r') as f:
+        for line in f.readlines():
+            line_parts = line.strip().split(' ')
+            predict[line_parts[0]] = line_parts[1:]
+    print(predict)

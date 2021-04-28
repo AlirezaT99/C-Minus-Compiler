@@ -3,7 +3,7 @@
         - Erfan Faravani - 97102174
 """
 from scanner import Scanner
-from parser import Parser
+from parse_tools import Parser  # python already has a parser package, so...
 import utils
 
 

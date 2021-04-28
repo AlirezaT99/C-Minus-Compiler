@@ -32,10 +32,10 @@ def get_short_comment(comment):
 class Scanner:
     def __init__(self, input_path):
         init_symbol_table()
-        self.read_input()
 
         self.input_path = input_path
         self.lines = None
+        self.read_input()
 
         self.line_number = 0
         self.cursor = 0
