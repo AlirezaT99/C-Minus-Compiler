@@ -2,8 +2,8 @@
         - Alireza Tajmirriahi - 97101372
         - Erfan Faravani - 97102174
 """
-from parser import Parser
 from scanner import Scanner
+from parser import Parser
 import utils
 
 
@@ -11,8 +11,8 @@ def run_compiler():
     parser = Parser(Scanner(INPUT_PATH))
     parser.run()
 
-    utils.save_syntax_errors()
-    utils.save_parse_tree()
+    utils.save_syntax_errors(parser)
+    utils.save_parse_tree(parser)
 
 
 INPUT_PATH = 'input.txt'
