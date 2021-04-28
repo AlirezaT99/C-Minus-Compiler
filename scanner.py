@@ -1,17 +1,6 @@
 from utils import *
 
 
-class TokenType:
-    SYMBOL = 'SYMBOL'
-    NUM = 'NUM'
-    ID = 'ID'
-    KEYWORD = 'KEYWORD'
-    COMMENT = 'COMMENT'
-    WHITESPACE = 'WHITESPACE'
-    ID_OR_KEYWORD = 'ID_OR_KEYWORD'
-    INVALID = 'Invalid input'
-
-
 def get_token_type(char):
     if char in [' ', '\t', '\n', '\r', '\v', '\f']:  # WHITESPACE
         return TokenType.WHITESPACE
@@ -42,15 +31,22 @@ def get_short_comment(comment):
 
 class Scanner:
     def __init__(self, input_path):
+        init_symbol_table()
+        self.read_input()
+
         self.input_path = input_path
         self.lines = None
 
         self.line_number = 0
         self.cursor = 0
 
+    def read_input(self):
+        with open(self.input_path, 'r') as f:
+            self.lines = ''.join([line for line in f.readlines()])
+
     def get_next_token(self):
         if self.eof_reached():
-            return False
+            return TokenType.DOLLAR
 
         char = self.get_current_char()
         token_type = get_token_type(char)
@@ -59,7 +55,7 @@ class Scanner:
             if char == '\n':
                 self.line_number += 1
             self.cursor += 1
-            return self.get_next_token()  # could result in a stack overflow :?
+            return self.get_next_token()
 
         elif token_type == TokenType.SYMBOL:
             if char == '=':
@@ -181,9 +177,6 @@ class Scanner:
         return num, False
 
     def read_all_tokens(self):
-        with open(self.input_path, 'r') as f:
-            self.lines = ''.join([line for line in f.readlines()])
-
         while True:
             if self.eof_reached():
                 break

@@ -3,16 +3,16 @@
         - Erfan Faravani - 97102174
 """
 from scanner import Scanner
+from parser import Parser
 import utils
 
 
 def run_compiler():
-    utils.init_symbol_table()
-    Scanner(INPUT_PATH).read_all_tokens()
+    parser = Parser(Scanner(INPUT_PATH))
+    parser.run()
 
-    utils.save_errors()
-    utils.save_symbol_table()
-    utils.save_tokens()
+    utils.save_syntax_errors(parser)
+    utils.save_parse_tree(parser)
 
 
 INPUT_PATH = 'input.txt'
