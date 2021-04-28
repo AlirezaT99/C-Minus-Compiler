@@ -1,17 +1,6 @@
 from utils import *
 
 
-class TokenType:
-    SYMBOL = 'SYMBOL'
-    NUM = 'NUM'
-    ID = 'ID'
-    KEYWORD = 'KEYWORD'
-    COMMENT = 'COMMENT'
-    WHITESPACE = 'WHITESPACE'
-    ID_OR_KEYWORD = 'ID_OR_KEYWORD'
-    INVALID = 'Invalid input'
-
-
 def get_token_type(char):
     if char in [' ', '\t', '\n', '\r', '\v', '\f']:  # WHITESPACE
         return TokenType.WHITESPACE
@@ -57,7 +46,7 @@ class Scanner:
 
     def get_next_token(self):
         if self.eof_reached():
-            return False
+            return TokenType.DOLLAR
 
         char = self.get_current_char()
         token_type = get_token_type(char)
@@ -66,7 +55,7 @@ class Scanner:
             if char == '\n':
                 self.line_number += 1
             self.cursor += 1
-            return self.get_next_token()  # could result in a stack overflow :?
+            return self.get_next_token()
 
         elif token_type == TokenType.SYMBOL:
             if char == '=':
@@ -155,7 +144,7 @@ class Scanner:
 
             if temp_type == TokenType.NUM or temp_type == TokenType.ID_OR_KEYWORD:
                 name += temp_char
-            elif temp_type == TokenType.WHITESPACE or temp_type == TokenType.SYMBOL:  # TODO sure?
+            elif temp_type == TokenType.WHITESPACE or temp_type == TokenType.SYMBOL:
                 return name, False
             else:
                 name += temp_char
@@ -174,7 +163,7 @@ class Scanner:
 
             if temp_type == TokenType.NUM:
                 num += temp_char
-            elif temp_type == TokenType.WHITESPACE or temp_type == TokenType.SYMBOL:  # TODO what about /
+            elif temp_type == TokenType.WHITESPACE or temp_type == TokenType.SYMBOL:
                 return num, False
             else:
                 num += temp_char

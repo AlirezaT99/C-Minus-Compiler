@@ -1,8 +1,22 @@
 from collections import defaultdict
 
+from parser import Parser
+
 symbol_table = dict()  # only keys are used for now
 lexical_errors = defaultdict(list)  # {line_no: [lexeme, error_type]}
 tokens = defaultdict(list)  # {line_no: [(type, lexeme),]}
+
+
+class TokenType:
+    SYMBOL = 'SYMBOL'
+    NUM = 'NUM'
+    ID = 'ID'
+    KEYWORD = 'KEYWORD'
+    COMMENT = 'COMMENT'
+    WHITESPACE = 'WHITESPACE'
+    ID_OR_KEYWORD = 'ID_OR_KEYWORD'
+    INVALID = 'Invalid input'
+    DOLLAR = '$'
 
 
 def init_symbol_table():
@@ -33,11 +47,11 @@ def save_tokens():
                            for line_no, line_tokens in tokens.items()]))
 
 
-def save_syntax_errors():
+def save_syntax_errors(parser: Parser):
     pass
 
 
-def save_parse_tree():
+def save_parse_tree(parser: Parser):
     pass
 
 
