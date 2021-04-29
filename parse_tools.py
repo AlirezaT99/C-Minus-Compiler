@@ -19,7 +19,6 @@ class Parser:
         token = self.scanner.get_next_token()
         while not token:  # Could've returned False due to lexical error
             token = self.scanner.get_next_token()
-        # print(token)
         return token
 
     def run(self):
@@ -27,9 +26,6 @@ class Parser:
         self.call_procedure(self.root)
 
     def call_procedure(self, non_terminal: Node):
-        print(self.lookahead)
-        if non_terminal.name=='Expression-stmt':
-            print(1000)
         for rule_number in utils.productions[non_terminal.name]:
             if self.lookahead[2] in utils.predict[rule_number] or self.lookahead[1] in utils.predict[rule_number]:  # selecting the appropriate production
                 self.call_rule(non_terminal, rule_number)

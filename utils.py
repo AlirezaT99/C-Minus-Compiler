@@ -105,7 +105,7 @@ def init_grammar():
         for idx, line in enumerate(f.readlines()):
             rhs = line.strip().split('->')[1]  # right-hand side
             grammar[idx + 1] = rhs.strip().split(' ')
-    print('productions:', productions)
-    print('first:', first)
-    print('predict:', predict)
-    print('grammar:', grammar)
+    # print('productions:', productions)
+    # print('first:', first)
+    # print('predict:', predict)
+    # print('grammar:', grammar)
