@@ -61,6 +61,8 @@ class Parser:
         if correct:
             Node(f'({self.lookahead[1]}, {self.lookahead[2]})', parent=parent)
             self.lookahead = self.get_next_token()
+        elif expected_token == utils.TokenType.EPSILON:
+            Node('epsilon', parent=parent)
         else:
             self.syntax_errors.append(f'#{self.lookahead[0]} : Syntax Error, Missing Params')
-            self.lookahead = self.get_next_token()  # TODO :?
+            # self.lookahead = self.get_next_token()  # TODO :?
