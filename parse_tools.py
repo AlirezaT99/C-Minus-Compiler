@@ -35,15 +35,26 @@ class Parser:
             if self.lookahead[2] in utils.follow[non_terminal.name]:
                 if utils.TokenType.EPSILON not in utils.first[non_terminal.name]:  # missing T
                     self.syntax_errors.append(f'#{self.lookahead[0]} : Syntax Error, Missing {non_terminal.name}')
-                non_terminal.parent = None  # Detach Node TODO here or 1 indent ?
+                non_terminal.parent = None  # Detach Node
                 return  # exit
             else:  # illegal token
-                self.syntax_errors.append(f'#{self.lookahead[0]} : syntax error, illegal {self.lookahead[2]}')
+                if self.eof_reached():
+                    self.syntax_errors.append(f'#{self.lookahead[0]} : syntax error, unexpected EOF')
+                    non_terminal.parent = None  # Detach Node
+                    return
+                # in samples, illegals are treated differently:
+                illegal_lookahead = self.lookahead[2]
+                if self.lookahead[1] in ['NUM', 'ID']:
+                    illegal_lookahead = self.lookahead[1]
+                #
+                self.syntax_errors.append(f'#{self.lookahead[0]} : syntax error, illegal {illegal_lookahead}')
                 self.lookahead = self.get_next_token()
                 self.call_procedure(non_terminal)
 
     def call_rule(self, parent, rule_number):
         for part in utils.grammar[rule_number]:
+            if self.eof_reached():
+                return
             if is_non_terminal(part):
                 node = Node(part, parent=parent)
                 self.call_procedure(node)
@@ -67,3 +78,6 @@ class Parser:
             Node('$', parent=parent)
         else:
             self.syntax_errors.append(f'#{self.lookahead[0]} : Syntax Error, Missing {expected_token}')
+
+    def eof_reached(self):
+        return self.lookahead[1] == utils.TokenType.DOLLAR
