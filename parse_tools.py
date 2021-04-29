@@ -27,8 +27,11 @@ class Parser:
         self.call_procedure(self.root)
 
     def call_procedure(self, non_terminal: Node):
+        print(self.lookahead)
+        if non_terminal.name=='Expression-stmt':
+            print(1000)
         for rule_number in utils.productions[non_terminal.name]:
-            if self.lookahead[2] in utils.predict[rule_number]:  # selecting the appropriate production
+            if self.lookahead[2] in utils.predict[rule_number] or self.lookahead[1] in utils.predict[rule_number]:  # selecting the appropriate production
                 self.call_rule(non_terminal, rule_number)
                 break
         else:  # is visited when no corresponding production was found
@@ -37,7 +40,7 @@ class Parser:
                     self.syntax_errors.append(f'#{self.lookahead[0]} : Syntax Error, Missing Params')  # print error
                 return  # exit
             else:  # illegal token
-                self.syntax_errors.append(f'#{self.lookahead[0]} : syntax error, illegal {self.lookahead}')
+                self.syntax_errors.append(f'#{self.lookahead[0]} : syntax error, illegal {self.lookahead[2]}')
                 self.lookahead = self.get_next_token()
                 self.call_procedure(non_terminal)
 

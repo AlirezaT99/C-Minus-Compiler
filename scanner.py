@@ -31,7 +31,7 @@ class Scanner:
 
     def get_next_token(self):
         if self.eof_reached():
-            return None, TokenType.DOLLAR, '$'
+            return self.line_number, TokenType.DOLLAR, '$'
 
         char = self.get_current_char()
         token_type = get_token_type(char)
@@ -88,8 +88,8 @@ class Scanner:
         next_char = self.lines[self.cursor + 1]
         if next_char not in ['/', '*']:
             lexical_errors[self.line_number].append(
-                (lexeme + (next_char if next_char is not '\n' else ''), 'Invalid input'))  # /
-            if next_char is '\n':  # Pure tof to fix the minor bug
+                (lexeme + (next_char if next_char != '\n' else ''), 'Invalid input'))  # /
+            if next_char == '\n':  # Pure tof to fix the minor bug
                 self.line_number += 1
             self.cursor += 2
             return None, True
