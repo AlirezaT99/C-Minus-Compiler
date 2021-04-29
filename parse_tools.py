@@ -27,13 +27,15 @@ class Parser:
 
     def call_procedure(self, non_terminal: Node):
         for rule_number in utils.productions[non_terminal.name]:
-            if self.lookahead[2] in utils.predict[rule_number] or self.lookahead[1] in utils.predict[rule_number]:  # selecting the appropriate production
+            if self.lookahead[2] in utils.predict[rule_number] or \
+                    self.lookahead[1] in utils.predict[rule_number]:  # selecting the appropriate production
                 self.call_rule(non_terminal, rule_number)
                 break
         else:  # is visited when no corresponding production was found
             if self.lookahead[2] in utils.follow[non_terminal.name]:
                 if utils.TokenType.EPSILON not in utils.first[non_terminal.name]:  # missing T
-                    self.syntax_errors.append(f'#{self.lookahead[0]} : Syntax Error, Missing Params')  # print error
+                    self.syntax_errors.append(f'#{self.lookahead[0]} : Syntax Error, Missing {non_terminal.name}')
+                non_terminal.parent = None  # Detach Node TODO here or 1 indent ?
                 return  # exit
             else:  # illegal token
                 self.syntax_errors.append(f'#{self.lookahead[0]} : syntax error, illegal {self.lookahead[2]}')
@@ -64,4 +66,4 @@ class Parser:
         elif expected_token == utils.TokenType.DOLLAR:
             Node('$', parent=parent)
         else:
-            self.syntax_errors.append(f'#{self.lookahead[0]} : Syntax Error, Missing Params')
+            self.syntax_errors.append(f'#{self.lookahead[0]} : Syntax Error, Missing {expected_token}')
