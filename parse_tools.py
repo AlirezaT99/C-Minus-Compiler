@@ -1,5 +1,5 @@
 import utils
-from anytree import Node, RenderTree
+from anytree import Node
 
 
 def is_non_terminal(word):
@@ -66,4 +66,3 @@ class Parser:
             Node('$', parent=parent)
         else:
             self.syntax_errors.append(f'#{self.lookahead[0]} : Syntax Error, Missing Params')
-            # self.lookahead = self.get_next_token()  # TODO :?
