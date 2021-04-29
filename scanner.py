@@ -22,7 +22,7 @@ class Scanner:
         self.lines = None
         self.read_input()
 
-        self.line_number = 0
+        self.line_number = 1
         self.cursor = 0
 
     def read_input(self):
