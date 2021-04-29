@@ -81,11 +81,9 @@ def save_syntax_errors(parser: Parser):
 
 
 def save_parse_tree(parser: Parser):
-    for pre, fill, node in RenderTree(parser.root):
-        print("%s%s" % (pre, node.name))
-    # with open('parse_tree.txt', 'w') as f:
-    #     for pre, fill, node in RenderTree(parser.root):
-    #         f.write("%s%s\n" % (pre, node.name))
+    with open('parse_tree.txt', 'w', encoding='utf-8') as f:
+        for pre, fill, node in RenderTree(parser.root):
+            f.write("%s%s\n" % (pre, node.name))
 
 
 def init_grammar():
