@@ -2,6 +2,10 @@ import utils
 from anytree import Node, RenderTree
 
 
+def is_non_terminal(word):
+    return word in utils.productions.keys()
+
+
 class Parser:
     def __init__(self, scanner):
         self.scanner = scanner
@@ -9,37 +13,53 @@ class Parser:
 
         self.root = Node('Program')
         self.lookahead = None
+        self.syntax_errors = []
 
     def get_next_token(self):
         token = self.scanner.get_next_token()
         while not token:  # Could've returned False due to lexical error
             token = self.scanner.get_next_token()
+        print(token)
         return token
-
-    def print_tree(self):
-        for pre, fill, node in RenderTree(self.root):
-            print("%s%s" % (pre, node.name))
 
     def run(self):
         self.lookahead = self.get_next_token()
         self.call_procedure(self.root)
-        self.print_tree()
 
     def call_procedure(self, non_terminal: Node):
         for rule_number in utils.productions[non_terminal.name]:
-            if self.lookahead in utils.predict[rule_number]:  # selecting the appropriate production
+            if self.lookahead[2] in utils.predict[rule_number]:  # selecting the appropriate production
                 self.call_rule(non_terminal, rule_number)
                 break
         else:  # is visited when no corresponding production was found
-            if self.lookahead in utils.follow[non_terminal]:
-                if 'EPSILON' not in utils.first[non_terminal]:  # missing T
-                    pass  # TODO print error
-                # TODO exit
-            else:  # illegal character
-                pass  # TODO print error and proceed
+            if self.lookahead in utils.follow[non_terminal.name]:
+                if utils.TokenType.EPSILON not in utils.first[non_terminal.name]:  # missing T
+                    self.syntax_errors.append(f'#{self.lookahead[0]} : Syntax Error, Missing Params')  # print error
+                return  # exit
+            else:  # illegal token
+                self.syntax_errors.append(f'#{self.lookahead[0]} : syntax error, illegal {self.lookahead}')
+                self.lookahead = self.get_next_token()
+                self.call_procedure(non_terminal)
 
     def call_rule(self, parent, rule_number):
-        pass
+        for part in utils.grammar[rule_number]:
+            if is_non_terminal(part):
+                node = Node(part, parent=parent)
+                self.call_procedure(node)
+            else:
+                self.call_match(part, parent)
 
-    def call_match(self, expected_token):
-        pass
+    def call_match(self, expected_token, parent):
+        correct = False
+        if expected_token in ['NUM', 'ID']:
+            correct = self.lookahead[1] == expected_token
+        elif (expected_token in utils.symbol_table['keywords']) \
+                or (utils.get_token_type(expected_token) == utils.TokenType.SYMBOL or expected_token == '==') \
+                or (expected_token == '$'):
+            correct = self.lookahead[2] == expected_token
+
+        if correct:
+            Node(f'({self.lookahead[1]}, {self.lookahead[2]})', parent=parent)
+        else:
+            self.syntax_errors.append(f'#{self.lookahead[0]} : Syntax Error, Missing Params')
+            self.lookahead = self.get_next_token()

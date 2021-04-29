@@ -1,6 +1,8 @@
 from collections import defaultdict
 import json
 
+from anytree import RenderTree
+
 from parse_tools import Parser
 
 symbol_table = dict()  # only keys are used for now
@@ -24,6 +26,22 @@ class TokenType:
     ID_OR_KEYWORD = 'ID_OR_KEYWORD'
     INVALID = 'Invalid input'
     DOLLAR = '$'
+    EPSILON = 'EPSILON'
+
+
+def get_token_type(char):
+    if char in [' ', '\t', '\n', '\r', '\v', '\f']:  # WHITESPACE
+        return TokenType.WHITESPACE
+    elif char in [';', ':', ',', '[', ']', '(', ')', '{', '}', '+', '-', '*', '=', '<']:  # SYMBOL
+        return TokenType.SYMBOL
+    elif char.isdigit():  # NUM
+        return TokenType.NUM
+    elif char.isalnum():  # ID / KEYWORD
+        return TokenType.ID_OR_KEYWORD
+    elif char == '/':  # COMMENT (potentially)
+        return TokenType.COMMENT
+    else:  # Invalid input
+        return TokenType.INVALID
 
 
 def init_symbol_table():
@@ -55,11 +73,17 @@ def save_tokens():
 
 
 def save_syntax_errors(parser: Parser):
-    pass
+    with open('syntax_errors.txt', 'w') as f:
+        if not parser.syntax_errors:
+            f.write('There is no syntax error.\n')
+        else:
+            f.write(error + 'n' for error in parser.syntax_errors)
 
 
 def save_parse_tree(parser: Parser):
-    pass
+    with open('parse_tree.txt', 'w') as f:
+        for pre, fill, node in RenderTree(parser.root):
+            f.write("%s%s\n" % (pre, node.name))
 
 
 def init_grammar():

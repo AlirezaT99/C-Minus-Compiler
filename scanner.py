@@ -1,21 +1,6 @@
 from utils import *
 
 
-def get_token_type(char):
-    if char in [' ', '\t', '\n', '\r', '\v', '\f']:  # WHITESPACE
-        return TokenType.WHITESPACE
-    elif char in [';', ':', ',', '[', ']', '(', ')', '{', '}', '+', '-', '*', '=', '<']:  # SYMBOL
-        return TokenType.SYMBOL
-    elif char.isdigit():  # NUM
-        return TokenType.NUM
-    elif char.isalnum():  # ID / KEYWORD
-        return TokenType.ID_OR_KEYWORD
-    elif char == '/':  # COMMENT (potentially)
-        return TokenType.COMMENT
-    else:  # Invalid input
-        return TokenType.INVALID
-
-
 def get_from_table(name):
     if name in symbol_table['keywords']:
         return TokenType.KEYWORD
@@ -46,7 +31,7 @@ class Scanner:
 
     def get_next_token(self):
         if self.eof_reached():
-            return TokenType.DOLLAR
+            return None, TokenType.DOLLAR, '$'
 
         char = self.get_current_char()
         token_type = get_token_type(char)
@@ -102,7 +87,8 @@ class Scanner:
 
         next_char = self.lines[self.cursor + 1]
         if next_char not in ['/', '*']:
-            lexical_errors[self.line_number].append((lexeme + (next_char if next_char is not '\n' else ''), 'Invalid input'))  # /
+            lexical_errors[self.line_number].append(
+                (lexeme + (next_char if next_char is not '\n' else ''), 'Invalid input'))  # /
             if next_char is '\n':  # Pure tof to fix the minor bug
                 self.line_number += 1
             self.cursor += 2
