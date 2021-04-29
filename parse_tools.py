@@ -13,7 +13,9 @@ class Parser:
 
         self.root = Node('Program')
         self.lookahead = None
+
         self.syntax_errors = []
+        self.unexpected_eof_reached = False
 
     def get_next_token(self):
         token = self.scanner.get_next_token()
@@ -40,6 +42,7 @@ class Parser:
             else:  # illegal token
                 if self.eof_reached():
                     self.syntax_errors.append(f'#{self.lookahead[0]} : syntax error, unexpected EOF')
+                    self.unexpected_eof_reached = True
                     non_terminal.parent = None  # Detach Node
                     return
                 # in samples, illegals are treated differently:
@@ -53,7 +56,7 @@ class Parser:
 
     def call_rule(self, parent, rule_number):
         for part in utils.grammar[rule_number]:
-            if self.eof_reached():
+            if self.unexpected_eof_reached:
                 return
             if is_non_terminal(part):
                 node = Node(part, parent=parent)

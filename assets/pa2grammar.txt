@@ -17,7 +17,7 @@ Param-list-void-abtar -> EPSILON
 Param-list -> , Param Param-list
 Param-list -> EPSILON
 Param -> Declaration-initial Param-prime
-Param-prime -> [  ]
+Param-prime -> [ ]
 Param-prime -> EPSILON
 Compound-stmt -> { Declaration-list Statement-list }
 Statement-list -> Statement Statement-list
