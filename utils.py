@@ -77,13 +77,15 @@ def save_syntax_errors(parser: Parser):
         if not parser.syntax_errors:
             f.write('There is no syntax error.\n')
         else:
-            f.write(error + 'n' for error in parser.syntax_errors)
+            f.write('\n'.join(error for error in parser.syntax_errors))
 
 
 def save_parse_tree(parser: Parser):
-    with open('parse_tree.txt', 'w') as f:
-        for pre, fill, node in RenderTree(parser.root):
-            f.write("%s%s\n" % (pre, node.name))
+    for pre, fill, node in RenderTree(parser.root):
+        print("%s%s" % (pre, node.name))
+    # with open('parse_tree.txt', 'w') as f:
+    #     for pre, fill, node in RenderTree(parser.root):
+    #         f.write("%s%s\n" % (pre, node.name))
 
 
 def init_grammar():

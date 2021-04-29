@@ -19,7 +19,7 @@ class Parser:
         token = self.scanner.get_next_token()
         while not token:  # Could've returned False due to lexical error
             token = self.scanner.get_next_token()
-        print(token)
+        # print(token)
         return token
 
     def run(self):
@@ -32,7 +32,7 @@ class Parser:
                 self.call_rule(non_terminal, rule_number)
                 break
         else:  # is visited when no corresponding production was found
-            if self.lookahead in utils.follow[non_terminal.name]:
+            if self.lookahead[2] in utils.follow[non_terminal.name]:
                 if utils.TokenType.EPSILON not in utils.first[non_terminal.name]:  # missing T
                     self.syntax_errors.append(f'#{self.lookahead[0]} : Syntax Error, Missing Params')  # print error
                 return  # exit
@@ -54,8 +54,7 @@ class Parser:
         if expected_token in ['NUM', 'ID']:
             correct = self.lookahead[1] == expected_token
         elif (expected_token in utils.symbol_table['keywords']) \
-                or (utils.get_token_type(expected_token) == utils.TokenType.SYMBOL or expected_token == '==') \
-                or (expected_token == '$'):
+                or (utils.get_token_type(expected_token) == utils.TokenType.SYMBOL or expected_token == '=='):
             correct = self.lookahead[2] == expected_token
 
         if correct:
@@ -63,6 +62,8 @@ class Parser:
             self.lookahead = self.get_next_token()
         elif expected_token == utils.TokenType.EPSILON:
             Node('epsilon', parent=parent)
+        elif expected_token == utils.TokenType.DOLLAR:
+            Node('$', parent=parent)
         else:
             self.syntax_errors.append(f'#{self.lookahead[0]} : Syntax Error, Missing Params')
             # self.lookahead = self.get_next_token()  # TODO :?
