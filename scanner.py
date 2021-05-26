@@ -6,7 +6,8 @@ def get_from_table(name):
         return TokenType.KEYWORD
     else:
         if name not in symbol_table['ids']:
-            symbol_table['ids'].append(name)
+            # symbol_table['ids'].append(name)
+            pass
         return TokenType.ID
 
 

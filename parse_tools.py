@@ -1,4 +1,5 @@
 import utils
+from codegen import CodeGenerator
 from anytree import Node
 
 
@@ -11,9 +12,9 @@ def is_action_symbol(word: str):
 
 
 class Parser:
-    def __init__(self, scanner, code_generator):
+    def __init__(self, scanner):
         self.scanner = scanner
-        self.code_generator = code_generator
+        self.code_generator = CodeGenerator()
 
         utils.init_grammar()
 

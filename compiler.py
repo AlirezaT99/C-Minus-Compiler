@@ -2,14 +2,13 @@
         - Alireza Tajmirriahi - 97101372
         - Erfan Faravani - 97102174
 """
-from codegen import CodeGenerator
 from scanner import Scanner
 from parse_tools import Parser  # python already has a parser package, so...
 import utils
 
 
 def run_compiler():
-    parser = Parser(Scanner(INPUT_PATH), CodeGenerator())
+    parser = Parser(Scanner(INPUT_PATH))
     parser.run()
 
     utils.save_program(parser.code_generator)
