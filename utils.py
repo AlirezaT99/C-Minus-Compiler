@@ -17,7 +17,6 @@ grammar = dict()  # {No: Prod}
 
 semantic_stack = list()
 program_block = list()
-memory = dict()  # {id: address} ?
 
 
 class TokenType:
