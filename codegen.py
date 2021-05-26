@@ -12,7 +12,7 @@ class CodeGenerator:
         self.__getattribute__(name[1:])(lookahead)
 
     def insert_code(self, part1, part2, part3='', part4=''):
-        self.PB[self.index] = (part1, part2, part3, part4)
+        self.PB[self.index] = f'({part1}, {part2}, {part3}, {part4})'
         self.index += 1
 
     def get_temp(self):

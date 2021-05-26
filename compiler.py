@@ -12,8 +12,7 @@ def run_compiler():
     parser = Parser(Scanner(INPUT_PATH), CodeGenerator())
     parser.run()
 
-    utils.save_parse_tree(parser)
-    utils.save_program()
+    utils.save_program(parser.code_generator)
 
 
 INPUT_PATH = 'samples_p3/T1/input.txt'

@@ -107,8 +107,7 @@ def init_grammar():
             grammar[idx + 1] = rhs.strip().split(' ')
 
 
-def save_program():
+def save_program(code_gen):
     with open('output.txt', 'w') as f:
-        for idx, item in enumerate(program_block):
-            item = list(item) + [''] * (4 - len(item))
-            f.write(f'{idx + 1}\t({item[0]},{item[1]},{item[2]},{item[3]})\n')
+        for idx, item in code_gen.PB.items():
+            f.write(f'{idx}\t{item}\n')
