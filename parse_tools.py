@@ -65,7 +65,7 @@ class Parser:
             if self.unexpected_eof_reached:
                 return
             if is_action_symbol(part):
-                self.code_generator.call_routine(part)
+                self.code_generator.call_routine(part, self.lookahead)
             if is_non_terminal(part):
                 node = Node(part, parent=parent)
                 self.call_procedure(node)

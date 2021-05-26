@@ -15,9 +15,6 @@ predict = dict()  # {No: [First(Prod(No))]}
 productions = dict()  # {T: [prod numbers]}
 grammar = dict()  # {No: Prod}
 
-semantic_stack = list()
-program_block = list()
-
 
 class TokenType:
     SYMBOL = 'SYMBOL'
@@ -104,14 +101,14 @@ def init_grammar():
         for line in f.readlines():
             line_parts = line.strip().split(' ')
             predict[int(line_parts[0])] = line_parts[1:]
-    with open('./assets/pa2grammar.txt', 'r') as f:
+    with open('./assets/pa3grammar.txt', 'r') as f:
         for idx, line in enumerate(f.readlines()):
             rhs = line.strip().split('->')[1]  # right-hand side
             grammar[idx + 1] = rhs.strip().split(' ')
 
 
 def save_program():
-    with open('syntax_errors.txt', 'w') as f:
-        for item in program_block:
+    with open('output.txt', 'w') as f:
+        for idx, item in enumerate(program_block):
             item = list(item) + [''] * (4 - len(item))
-            f.write(f'({item[0]},{item[1]},{item[2]},{item[3]})\n')
+            f.write(f'{idx + 1}\t({item[0]},{item[1]},{item[2]},{item[3]})\n')
