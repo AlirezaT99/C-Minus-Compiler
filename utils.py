@@ -15,6 +15,10 @@ predict = dict()  # {No: [First(Prod(No))]}
 productions = dict()  # {T: [prod numbers]}
 grammar = dict()  # {No: Prod}
 
+semantic_stack = list()
+program_block = list()
+memory = dict()  # {id: address} ?
+
 
 class TokenType:
     SYMBOL = 'SYMBOL'
@@ -105,7 +109,10 @@ def init_grammar():
         for idx, line in enumerate(f.readlines()):
             rhs = line.strip().split('->')[1]  # right-hand side
             grammar[idx + 1] = rhs.strip().split(' ')
-    # print('productions:', productions)
-    # print('first:', first)
-    # print('predict:', predict)
-    # print('grammar:', grammar)
+
+
+def save_program():
+    with open('syntax_errors.txt', 'w') as f:
+        for item in program_block:
+            item = list(item) + [''] * (4 - len(item))
+            f.write(f'({item[0]},{item[1]},{item[2]},{item[3]})\n')
