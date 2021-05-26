@@ -1,4 +1,5 @@
 import utils
+from codegen import CodeGenerator
 from anytree import Node
 
 
@@ -6,9 +7,15 @@ def is_non_terminal(word):
     return word in utils.productions.keys()
 
 
+def is_action_symbol(word: str):
+    return word.startswith('#')
+
+
 class Parser:
     def __init__(self, scanner):
         self.scanner = scanner
+        self.code_generator = CodeGenerator()
+
         utils.init_grammar()
 
         self.root = Node('Program')
@@ -58,6 +65,8 @@ class Parser:
         for part in utils.grammar[rule_number]:
             if self.unexpected_eof_reached:
                 return
+            if is_action_symbol(part):
+                self.code_generator.call_routine(part, self.lookahead)
             if is_non_terminal(part):
                 node = Node(part, parent=parent)
                 self.call_procedure(node)

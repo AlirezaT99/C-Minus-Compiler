@@ -11,11 +11,10 @@ def run_compiler():
     parser = Parser(Scanner(INPUT_PATH))
     parser.run()
 
-    utils.save_syntax_errors(parser)
-    utils.save_parse_tree(parser)
+    utils.save_program(parser.code_generator)
 
 
-INPUT_PATH = 'input.txt'
+INPUT_PATH = 'samples_p3/T1/input.txt'
 
 if __name__ == '__main__':
     run_compiler()
