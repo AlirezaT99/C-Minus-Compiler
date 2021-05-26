@@ -75,7 +75,7 @@ Signed-factor-zegond -> - Factor
 Signed-factor-zegond -> Factor-zegond
 Factor -> ( Expression )
 Factor -> ID Var-call-prime
-Factor -> NUM
+Factor -> #push_num NUM
 Var-call-prime -> ( Args )
 Var-call-prime -> Var-prime
 Var-prime -> [ Expression ]
@@ -83,7 +83,7 @@ Var-prime -> EPSILON
 Factor-prime -> ( Args )
 Factor-prime -> EPSILON
 Factor-zegond -> ( Expression )
-Factor-zegond -> NUM
+Factor-zegond -> #push_num NUM
 Args -> Arg-list
 Args -> EPSILON
 Arg-list -> Expression Arg-list-prime

@@ -8,6 +8,12 @@ class CodeGenerator:
         self.index = 0
         self.temp_address = 1000
 
+    @staticmethod
+    def find_address(item):
+        for record in utils.symbol_table['ids'][::-1]:
+            if item == record[0]:
+                return record[2]
+
     def call_routine(self, name, lookahead):
         self.__getattribute__(name[1:])(lookahead)
 
@@ -40,7 +46,3 @@ class CodeGenerator:
 
     def push_num(self, lookahead):
         self.SS.append(f'#{lookahead[2]}')
-
-    @staticmethod
-    def find_address(item):
-        return None  # TODO
