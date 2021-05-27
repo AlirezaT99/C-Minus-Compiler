@@ -85,3 +85,23 @@ class CodeGenerator:
         self.insert_code('ADD', result, temp, result)
 
         self.SS.append(f'@{result}')
+
+    def save(self, lookahead):
+        self.SS.append(self.index)
+        self.index += 1
+
+    def label(self, lookahead):
+        self.SS.append(self.index)
+
+    def jump(self, lookahead):
+        dest = int(self.SS.pop())
+        self.PB[dest] = f'(JP, {self.index}, , )'
+
+    def while_jumps(self, lookahead):
+        self.PB[int(self.SS[-1])] = f'(JPF, {self.SS[-2]}, {self.index + 1}, )'
+        self.PB[self.index] = f'(JP, {self.SS[-3]}, , )'
+        self.index += 1
+        self.SS.pop(), self.SS.pop(), self.SS.pop()
+
+    def clean_up(self, lookahead):
+        self.SS.pop()
