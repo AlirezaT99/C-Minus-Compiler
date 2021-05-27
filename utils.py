@@ -109,5 +109,5 @@ def init_grammar():
 
 def save_program(code_gen):
     with open('output.txt', 'w') as f:
-        for idx, item in code_gen.PB.items():
-            f.write(f'{idx}\t{item}\n')
+        for idx in sorted(code_gen.PB.keys()):
+            f.write(f'{idx}\t{code_gen.PB[idx]}\n')
