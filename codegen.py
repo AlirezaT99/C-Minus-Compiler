@@ -62,7 +62,26 @@ class CodeGenerator:
 
         address = self.get_temp()
         self.insert_code(self.operations_dict[operator], operand_1, operand_2, address)
+        self.SS.append(address)
 
     def assign_operation(self, lookahead):
         self.insert_code('ASSIGN', self.SS[-1], self.SS[-2])
         self.SS.pop()
+
+    def multiply(self, lookahead):
+        result_address = self.get_temp()
+
+        self.insert_code('MULT', self.SS[-1], self.SS[-2], result_address)
+        self.SS.pop()
+        self.SS.pop()
+        self.SS.append(result_address)
+
+    def array_index(self, lookahead):
+        idx, array_address = self.SS.pop(), self.SS.pop()
+
+        temp, result = self.get_temp(), self.get_temp()
+        self.insert_code('MULT', '#4', idx, temp)
+        self.insert_code('ASSIGN', f'@{array_address}', result)
+        self.insert_code('ADD', result, temp, result)
+
+        self.SS.append(f'@{result}')
