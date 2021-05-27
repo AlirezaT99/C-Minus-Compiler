@@ -8,6 +8,8 @@ class CodeGenerator:
         self.index = 0
         self.temp_address = 1000
 
+        self.operations_dict = {'+': 'ADD', '-': 'SUB', '<': 'LT', '==': 'EQ'}
+
     @staticmethod
     def find_address(item):
         for record in utils.symbol_table['ids'][::-1]:
@@ -44,5 +46,23 @@ class CodeGenerator:
     def push_id(self, lookahead):
         self.SS.append(lookahead[2])
 
+    def push_id_address(self, lookahead):
+        self.SS.append(CodeGenerator.find_address(lookahead[2]))
+
     def push_num(self, lookahead):
         self.SS.append(f'#{lookahead[2]}')
+
+    def push_operator(self, lookahead):
+        self.SS.append(lookahead[2])
+
+    def save_operation(self, lookahead):
+        operand_2 = self.SS.pop()
+        operator = self.SS.pop()
+        operand_1 = self.SS.pop()
+
+        address = self.get_temp()
+        self.insert_code(self.operations_dict[operator], operand_1, operand_2, address)
+
+    def assign_operation(self, lookahead):
+        self.insert_code('ASSIGN', self.SS[-1], self.SS[-2])
+        self.SS.pop()
