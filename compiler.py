@@ -14,7 +14,7 @@ def run_compiler():
     utils.save_program(parser.code_generator)
 
 
-INPUT_PATH = 'samples_p3/T1/input.txt'
+INPUT_PATH = 'samples_p3/T3/input.txt'
 
 if __name__ == '__main__':
     run_compiler()

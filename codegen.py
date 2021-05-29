@@ -114,4 +114,8 @@ class CodeGenerator:
         self.SS.pop()
 
     def print_out(self, lookahead):
-        self.insert_code('PRINT', lookahead[2])
+        adr = utils.get_symbol_table_from_id(lookahead[2])[2]
+        if lookahead[1] == 'NUM':
+            self.insert_code('PRINT', lookahead[0] * 4 + int(adr))
+        else:
+            self.insert_code('PRINT', adr)

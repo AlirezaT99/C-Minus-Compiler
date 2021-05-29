@@ -1,5 +1,5 @@
-from collections import defaultdict
 import json
+from collections import defaultdict
 
 from anytree import RenderTree
 
@@ -27,6 +27,12 @@ class TokenType:
     INVALID = 'Invalid input'
     DOLLAR = '$'
     EPSILON = 'EPSILON'
+
+
+def get_symbol_table_from_id(id):
+    for i in symbol_table['ids']:
+        if i[0] == id:
+            return i
 
 
 def get_token_type(char):
