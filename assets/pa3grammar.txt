@@ -76,11 +76,11 @@ Signed-factor-zegond -> Factor-zegond
 Factor -> ( Expression )
 Factor -> #push_id_address ID Var-call-prime
 Factor -> #push_num NUM
-Var-call-prime -> ( Args )
+Var-call-prime -> ( Args #implicit_output )
 Var-call-prime -> Var-prime
 Var-prime -> [ Expression ] #array_index
 Var-prime -> EPSILON
-Factor-prime -> ( Args )
+Factor-prime -> ( Args #implicit_output )
 Factor-prime -> EPSILON
 Factor-zegond -> ( Expression )
 Factor-zegond -> #push_num NUM

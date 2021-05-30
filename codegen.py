@@ -12,6 +12,8 @@ class CodeGenerator:
 
     @staticmethod
     def find_address(item):
+        if item == 'output':
+            return item
         for record in utils.symbol_table['ids'][::-1]:
             if item == record[0]:
                 return record[2]
@@ -85,6 +87,10 @@ class CodeGenerator:
         self.insert_code('ADD', result, temp, result)
 
         self.SS.append(f'@{result}')
+
+    def implicit_output(self, lookahead):
+        if self.SS[-2] == 'output':
+            self.insert_code('PRINT', self.SS.pop())
 
     def save(self, lookahead):
         self.SS.append(self.index)
