@@ -117,5 +117,11 @@ class CodeGenerator:
         self.index += 1
         self.SS.pop(), self.SS.pop(), self.SS.pop()
 
+    def negate_factor(self, lookahead):
+        result = self.get_temp()
+        factor_value = self.SS.pop()
+        self.insert_code('SUB', '#0', factor_value, result)
+        self.SS.append(result)
+
     def clean_up(self, lookahead):
         self.SS.pop()
