@@ -64,6 +64,7 @@ class CodeGenerator:
 
         address = self.get_temp()
         self.insert_code(self.operations_dict[operator], operand_1, operand_2, address)
+
         self.SS.append(address)
 
     def assign_operation(self, lookahead):
@@ -102,7 +103,7 @@ class CodeGenerator:
     def jpf_save(self, lookahead):
         dest = self.SS.pop()
         src = self.SS.pop()
-        self.PB[int(dest)] = f'(JPF, {src}, {self.index + 1}, )'
+        self.PB[dest] = f'(JPF, {src}, {self.index + 1}, )'
         self.SS.append(self.index)
         self.index += 1
 
@@ -118,10 +119,3 @@ class CodeGenerator:
 
     def clean_up(self, lookahead):
         self.SS.pop()
-
-    def print_out(self, lookahead):
-        adr = utils.get_symbol_table_from_id(lookahead[2])[2]
-        if lookahead[1] == 'NUM':
-            self.insert_code('PRINT', lookahead[0] * 4 + int(adr))
-        else:
-            self.insert_code('PRINT', adr)
