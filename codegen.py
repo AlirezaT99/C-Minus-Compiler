@@ -6,7 +6,7 @@ class CodeGenerator:
         self.SS = list()
         self.PB = dict()
         self.index = 0
-        self.temp_address = 1000
+        self.temp_address = 500
 
         self.operations_dict = {'+': 'ADD', '-': 'SUB', '<': 'LT', '==': 'EQ'}
 
@@ -28,7 +28,7 @@ class CodeGenerator:
     def get_temp(self, count=1):
         address = str(self.temp_address)
         for _ in range(count):
-            self.insert_code('ASSIGN', '#0', self.temp_address)
+            self.insert_code('ASSIGN', '#0', str(self.temp_address))
             self.temp_address += 4
         return address
 
@@ -99,6 +99,13 @@ class CodeGenerator:
     def label(self, lookahead):
         self.SS.append(self.index)
 
+    def jpf_save(self, lookahead):
+        dest = self.SS.pop()
+        src = self.SS.pop()
+        self.PB[int(dest)] = f'(JPF, {src}, {self.index + 1}, )'
+        self.SS.append(self.index)
+        self.index += 1
+
     def jump(self, lookahead):
         dest = int(self.SS.pop())
         self.PB[dest] = f'(JP, {self.index}, , )'
@@ -111,3 +118,10 @@ class CodeGenerator:
 
     def clean_up(self, lookahead):
         self.SS.pop()
+
+    def print_out(self, lookahead):
+        adr = utils.get_symbol_table_from_id(lookahead[2])[2]
+        if lookahead[1] == 'NUM':
+            self.insert_code('PRINT', lookahead[0] * 4 + int(adr))
+        else:
+            self.insert_code('PRINT', adr)

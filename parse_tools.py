@@ -1,6 +1,7 @@
+from anytree import Node
+
 import utils
 from codegen import CodeGenerator
-from anytree import Node
 
 
 def is_non_terminal(word):
@@ -15,6 +16,8 @@ class Parser:
     def __init__(self, scanner):
         self.scanner = scanner
         self.code_generator = CodeGenerator()
+        self.print_output = False
+        self.array_id = None
 
         utils.init_grammar()
 
@@ -24,10 +27,25 @@ class Parser:
         self.syntax_errors = []
         self.unexpected_eof_reached = False
 
+    def check_output(self, token):
+        if token[1] == 'ID' and self.print_output:
+            symbol_id = utils.get_symbol_table_from_id(token[2])
+            if '*' in symbol_id[1]:
+                self.array_id = symbol_id
+            else:
+                self.code_generator.call_routine('#print_out', token)
+                self.print_output = False
+        if token[1] == 'NUM' and self.print_output:
+            self.code_generator.call_routine('#print_out', [int(token[2]), 'NUM', self.array_id[0]])
+            self.print_output = False
+        if token[1] == 'ID' and token[2] == 'output':
+            self.print_output = True
+
     def get_next_token(self):
         token = self.scanner.get_next_token()
         while not token:  # Could've returned False due to lexical error
             token = self.scanner.get_next_token()
+        self.check_output(token)
         return token
 
     def run(self):
