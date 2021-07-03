@@ -29,14 +29,14 @@ Statement -> Iteration-stmt
 Statement -> Return-stmt
 Statement -> For-stmt
 Expression-stmt -> Expression ; #clean_up
-Expression-stmt -> break ;
+Expression-stmt -> break ; #break_loop
 Expression-stmt -> ;
 Selection-stmt -> if ( Expression ) #save Statement else #jpf_save Statement #jump
-Iteration-stmt -> while #label ( Expression ) #save Statement #while_jumps
+Iteration-stmt -> while #label ( Expression ) #new_break #save Statement #while_jumps #end_break
 Return-stmt -> return Return-stmt-prime
 Return-stmt-prime -> ;
 Return-stmt-prime -> Expression ;
-For-stmt -> for #get_temp_save #push_id_address ID = Vars Statement #for_statement
+For-stmt -> for #get_temp_save #push_id_address ID = Vars #new_break Statement #for_statement #end_break
 Vars -> Var Var-zegond
 Var-zegond -> , Var Var-zegond
 Var-zegond -> EPSILON #jump_fill_save

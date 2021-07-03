@@ -5,9 +5,9 @@ class CodeGenerator:
     def __init__(self):
         self.SS = list()
         self.PB = dict()
+        self.break_stack = list()
         self.index = 0
         self.temp_address = 500
-
         self.operations_dict = {'+': 'ADD', '-': 'SUB', '<': 'LT', '==': 'EQ'}
 
     @staticmethod
@@ -152,3 +152,20 @@ class CodeGenerator:
         self.SS.pop(), self.SS.pop()
         self.SS.append(self.index)
         self.index += 1
+
+    # Break statement
+    def break_loop(self, lookahead):
+        """saves i to be later filled with a jump to after the scope"""
+        self.break_stack.append(self.index)
+        self.index += 1
+
+    def new_break(self, lookahead):
+        """makes sure that break-stmt breaks the deepest breakable scope"""
+        self.break_stack.append('>>>')
+
+    def end_break(self, lookahead):
+        """fills PB[saved i] with a jump to current i and ends the scope"""
+        latest_block = len(self.break_stack) - self.break_stack[::-1].index('>>>') - 1
+        for item in self.break_stack[latest_block + 1:]:
+            self.PB[item] = f'(JP, {self.index}, , )'
+        self.break_stack = self.break_stack[:latest_block]
