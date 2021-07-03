@@ -1,3 +1,0 @@
-PRINT    10
-PRINT    5
-PRINT    3

@@ -1,2 +1,0 @@
-PRINT    20
-PRINT    3
