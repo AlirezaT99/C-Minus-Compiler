@@ -36,11 +36,11 @@ Iteration-stmt -> while #label ( Expression ) #save Statement #while_jumps
 Return-stmt -> return Return-stmt-prime
 Return-stmt-prime -> ;
 Return-stmt-prime -> Expression ;
-For-stmt -> for ID = Vars Statement
+For-stmt -> for #get_temp_save #pid ID = Vars Statement #for_statement
 Vars -> Var Var-zegond
 Var-zegond -> , Var Var-zegond
-Var-zegond -> EPSILON
-Var -> ID Var-prime
+Var-zegond -> #jump_fill_save EPSILON
+Var -> #pid ID Var-prime #assign_jump
 Expression -> Simple-expression-zegond
 Expression -> #push_id_address ID B
 B -> = Expression #assign_operation
