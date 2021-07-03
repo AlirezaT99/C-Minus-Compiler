@@ -126,7 +126,7 @@ class CodeGenerator:
     def clean_up(self, lookahead):
         self.SS.pop()
 
-    # Phase IV
+    # Phase IV routines
     def get_temp_save(self, lookahead):
         temp = self.get_temp()
         self.SS.append(temp)
