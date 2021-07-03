@@ -84,7 +84,7 @@ class CodeGenerator:
 
         temp, result = self.get_temp(), self.get_temp()
         self.insert_code('MULT', '#4', idx, temp)
-        self.insert_code('ASSIGN', f'@{array_address}', result)
+        self.insert_code('ASSIGN', f'{array_address}', result)  # TODO BUG
         self.insert_code('ADD', result, temp, result)
 
         self.SS.append(f'@{result}')
