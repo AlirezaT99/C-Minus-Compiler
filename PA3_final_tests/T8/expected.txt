@@ -1,0 +1,4 @@
+PRINT    6
+PRINT    8
+PRINT    10
+PRINT    16
