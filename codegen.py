@@ -130,13 +130,17 @@ class CodeGenerator:
     def get_temp_save(self, lookahead):
         temp = self.get_temp()
         self.SS.append(temp)
-        self.insert_code('ASSIGN', f'#{self.index + 2}', temp)
+        self.insert_code('ASSIGN', f'#{self.index + 3}', temp)
         temp_2 = self.get_temp()
         self.SS.append(temp_2)
         self.SS.append(self.index)
+        self.index += 1
 
     def for_statement(self, lookahead):
         self.insert_code('ADD', self.SS[-3], '#2', self.SS[-3])
+        self.insert_code('JP', f'@{self.SS[-3]}')
+        self.PB[self.SS[-1]] = f'(JP, {self.index}, , )'
+        self.SS.pop(), self.SS.pop(), self.SS.pop()
 
     def assign_jump(self, lookahead):
         self.insert_code('ASSIGN', self.SS[-1], self.SS[-2])
@@ -144,7 +148,7 @@ class CodeGenerator:
         self.SS.pop()
 
     def jump_fill_save(self, lookahead):
-        self.PB[self.SS[-1]] = f'(ASSIGN, #{self.index + 1}, {self.SS[-3]}, )'
+        self.PB[int(self.SS[-2])] = f'(ASSIGN, #{self.index + 1}, {self.SS[-3]}, )'
         self.SS.pop(), self.SS.pop()
         self.SS.append(self.index)
         self.index += 1
