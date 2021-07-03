@@ -1,0 +1,44 @@
+/* === Sample 7  ===  */
+int find_in_array(int x){
+    int a[5];
+    int b;
+    int c;
+    int d;
+    int e;
+    int f;
+    int g;
+    int found;
+    int index;
+
+    a[0] = 0;
+    a[1] = -5;
+    a[2] = 3;
+    a[3] = 4;
+    a[4] = 78;
+    b = 0;
+    c = 1;
+    d = 2;
+    e = 3;
+    f = 4;
+
+    index = -1;
+
+    for g = b, c, d, e, f {
+        if (x == a[g]){
+            index = g;
+            break;
+        }
+    }
+
+    return index;
+}
+
+void main( void )
+{
+    int b;
+
+    b = find_in_array(5);
+    output(b);
+    b = find_in_array(4);
+    output(b);
+}

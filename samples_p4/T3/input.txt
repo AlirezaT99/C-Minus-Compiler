@@ -1,0 +1,25 @@
+/*===== sample 3 =====*/
+void foo(int x){
+	int a;
+	int b;
+	int c;
+	int d;
+	int e;
+	a = 1;
+	b = 2;
+	c = 3;
+	d = x;
+
+	for e = a, b, c {
+		for x = a, b, c, d, e {
+			output(x);
+		}
+	}
+	x = d;
+	output(x - a - b - c);
+
+}
+void main ( void )
+{
+	foo (30);
+}
