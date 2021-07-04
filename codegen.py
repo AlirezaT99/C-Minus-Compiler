@@ -128,6 +128,10 @@ class CodeGenerator:
 
     # Phase IV routines
     def get_temp_save(self, lookahead):
+        """saves the address for the first var to be assigned
+        which will be increased by 2 every time #for_statement is reached
+        so that every iteration starts at the next assign
+        """
         temp = self.get_temp()
         self.SS.append(temp)
         self.insert_code('ASSIGN', f'#{self.index + 3}', temp)
@@ -137,17 +141,27 @@ class CodeGenerator:
         self.index += 1
 
     def for_statement(self, lookahead):
+        """the last time that the temp is increased,
+        the program jumps to the line which jumps out of the loop
+        """
         self.insert_code('ADD', self.SS[-3], '#2', self.SS[-3])
         self.insert_code('JP', f'@{self.SS[-3]}')
         self.PB[self.SS[-1]] = f'(JP, {self.index}, , )'
         self.SS.pop(), self.SS.pop(), self.SS.pop()
 
     def assign_jump(self, lookahead):
+        """is called for each var that is about to be assigned to the loop var (i).
+        This function creates the assign command and then jumps to the
+        first statement in the loop body
+        """
         self.insert_code('ASSIGN', self.SS[-1], self.SS[-2])
         self.insert_code('JP', f'@{self.SS[-4]}')
         self.SS.pop()
 
     def jump_fill_save(self, lookahead):
+        """is called when all the assignments and their according jumps have been considered
+        and determines the address to jump to on each iteration
+        """
         self.PB[int(self.SS[-2])] = f'(ASSIGN, #{self.index + 1}, {self.SS[-3]}, )'
         self.SS.pop(), self.SS.pop()
         self.SS.append(self.index)
@@ -169,3 +183,13 @@ class CodeGenerator:
         for item in self.break_stack[latest_block + 1:]:
             self.PB[item] = f'(JP, {self.index}, , )'
         self.break_stack = self.break_stack[:latest_block]
+
+    # Function call and return
+    def define_function(self, lookahead):
+        pass
+
+    def perform_return(self, lookahead):
+        pass
+
+    def push_index(self, lookahead):
+        self.SS.append(f'#{self.index}')
