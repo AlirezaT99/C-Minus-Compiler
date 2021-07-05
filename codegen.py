@@ -192,8 +192,8 @@ class CodeGenerator:
 
     # Break statement
     def break_loop(self, lookahead):
-        self.break_check(lookahead)
         """saves i to be later filled with a jump to after the scope"""
+        self.break_check(lookahead)
         self.break_stack.append(self.index)
         self.index += 1
 
@@ -207,15 +207,6 @@ class CodeGenerator:
         for item in self.break_stack[latest_block + 1:]:
             self.PB[item] = f'(JP, {self.index}, , )'
         self.break_stack = self.break_stack[:latest_block]
-
-    def push_scope(self, lookahead):
-        self.current_scope += 1
-
-    def pop_scope(self, lookahead):
-        for record in utils.symbol_table['ids'][::-1]:
-            if record[3] == self.current_scope:
-                del utils.symbol_table['ids'][-1]
-        self.current_scope -= 1
 
     # Function call and return
     def finish_function(self, lookahead):
@@ -234,6 +225,13 @@ class CodeGenerator:
         self.PB[self.SS.pop()] = f'(JP, {self.index}, , )'
 
     def call_function(self, lookahead):
+        """Does the following:
+            1. assigns inputs to args.
+            2. sets where the func must return to.
+            3. jumps to the beginning of the function.
+            4. saves the result (if any) to a temp and pops
+               everything about the function and pushes the temp.
+        """
         if self.SS[-1] != 'output':
             args, attributes = [], []
             for item in self.SS[::-1]:
@@ -256,6 +254,9 @@ class CodeGenerator:
             self.SS.append(result)
 
     def start_params(self, lookahead):
+        """marks the symbol table so that the args are recognized later.
+        It also saves a place for jumping over for non-main functions.
+        """
         func_attr = self.SS.pop()
         self.SS.append(self.index)  # to jump over for non-main functions
         self.index += 1
@@ -267,6 +268,7 @@ class CodeGenerator:
         self.SS.append(f'#{self.index}')
 
     def create_record(self, lookahead):
+        """adds the function and its attributes to the symbol table"""
         return_address = self.get_temp()
         current_index = self.index
         return_value = self.get_temp()
@@ -283,19 +285,28 @@ class CodeGenerator:
 
     # Manage returns
     def new_return(self, lookahead):
+        """indicates new function so that every report between this and #end_return
+        sets the return value and jumps to the address set by the caller
+        """
         self.return_stack.append('>>>')
 
     def save_return(self, lookahead):
+        """called by each return. Saves two instructions:
+        one for assigning the return value,
+        and one for jumping to the caller
+        """
         self.return_stack.append((self.index, self.SS[-1]))
         self.SS.pop()
         self.index += 2
 
     def return_anyway(self, lookahead):
+        """places a jump at the end of function. just in case it hasn't already"""
         if self.SS[-3] != 'main':
             return_address = self.SS[-1]
             self.insert_code('JP', f'@{return_address}')
 
     def end_return(self, lookahead):
+        """called at the end of the function, fills the gaps created by returns"""
         latest_func = len(self.return_stack) - self.return_stack[::-1].index('>>>') - 1
         return_value = self.SS[-2]
         return_address = self.SS[-1]
@@ -321,3 +332,12 @@ class CodeGenerator:
 
     def type_mismatch(self, lookahead):
         pass
+
+    def push_scope(self, lookahead):
+        self.current_scope += 1
+
+    def pop_scope(self, lookahead):
+        for record in utils.symbol_table['ids'][::-1]:
+            if record[3] == self.current_scope:
+                del utils.symbol_table['ids'][-1]
+        self.current_scope -= 1
