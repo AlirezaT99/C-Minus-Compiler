@@ -67,7 +67,7 @@ class Parser:
                 return
             if is_action_symbol(part):
                 self.code_generator.call_routine(part, self.lookahead)
-            if is_non_terminal(part):
+            elif is_non_terminal(part):
                 node = Node(part, parent=parent)
                 self.call_procedure(node)
             else:
