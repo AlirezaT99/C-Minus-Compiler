@@ -2,7 +2,7 @@ Program -> Declaration-list $
 Declaration-list -> Declaration Declaration-list
 Declaration-list -> EPSILON 
 Declaration -> Declaration-initial Declaration-prime
-Declaration-initial ->  Type-specifier #push_id ID
+Declaration-initial -> #get_id_type Type-specifier #push_id ID
 Declaration-prime -> Fun-declaration-prime
 Declaration-prime -> Var-declaration-prime
 Var-declaration-prime -> ; #define_variable
@@ -19,7 +19,7 @@ Param-list -> EPSILON
 Param -> Declaration-initial Param-prime
 Param-prime -> [ ]
 Param-prime -> EPSILON
-Compound-stmt -> { Declaration-list Statement-list }
+Compound-stmt -> #push_scope { Declaration-list Statement-list } #pop_scope
 Statement-list -> Statement Statement-list
 Statement-list -> EPSILON
 Statement -> Expression-stmt

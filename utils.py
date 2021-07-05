@@ -7,6 +7,7 @@ from parse_tools import Parser
 
 symbol_table = dict()  # only keys are used for now
 lexical_errors = defaultdict(list)  # {line_no: [lexeme, error_type]}
+semantic_errors = []
 tokens = defaultdict(list)  # {line_no: [(type, lexeme),]}
 
 first = dict()  # {T: [First(T)]}
