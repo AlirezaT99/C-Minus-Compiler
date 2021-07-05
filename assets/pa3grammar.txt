@@ -7,14 +7,14 @@ Declaration-prime -> Fun-declaration-prime
 Declaration-prime -> Var-declaration-prime
 Var-declaration-prime -> ; #define_variable
 Var-declaration-prime -> [ #push_num NUM ] ; #define_array
-Fun-declaration-prime ->  ( Params ) Compound-stmt #define_function
+Fun-declaration-prime -> #start_params ( Params ) #create_record #new_return Compound-stmt #end_return #return_anyway #finish_function
 Type-specifier -> int
 Type-specifier -> void
-Params -> int ID Param-prime Param-list
+Params -> int #push_id ID #define_variable Param-prime Param-list
 Params -> void Param-list-void-abtar
 Param-list-void-abtar -> ID Param-prime Param-list
 Param-list-void-abtar -> EPSILON
-Param-list -> , Param Param-list
+Param-list -> , Param #define_variable Param-list
 Param-list -> EPSILON
 Param -> Declaration-initial Param-prime
 Param-prime -> [ ]
@@ -33,9 +33,9 @@ Expression-stmt -> break ; #break_loop
 Expression-stmt -> ;
 Selection-stmt -> if ( Expression ) #save Statement else #jpf_save Statement #jump
 Iteration-stmt -> while #label ( Expression ) #new_break #save Statement #while_jumps #end_break
-Return-stmt -> return Return-stmt-prime
-Return-stmt -> return Return-stmt-prime #perform_return
+Return-stmt -> return Return-stmt-prime #save_return
 Return-stmt-prime -> #push_index ;
+Return-stmt-prime -> Expression ;
 For-stmt -> for #get_temp_save #push_id_address ID = Vars #new_break Statement #for_statement #end_break
 Vars -> Var Var-zegond
 Var-zegond -> , Var Var-zegond
@@ -76,11 +76,11 @@ Signed-factor-zegond -> Factor-zegond
 Factor -> ( Expression )
 Factor -> #push_id_address ID Var-call-prime
 Factor -> #push_num NUM
-Var-call-prime -> ( Args #implicit_output )
+Var-call-prime -> ( Args #implicit_output ) #call_function
 Var-call-prime -> Var-prime
 Var-prime -> [ Expression ] #array_index
 Var-prime -> EPSILON
-Factor-prime -> ( Args #implicit_output )
+Factor-prime -> ( Args #implicit_output ) #call_function
 Factor-prime -> EPSILON
 Factor-zegond -> ( Expression )
 Factor-zegond -> #push_num NUM
