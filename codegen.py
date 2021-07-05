@@ -217,24 +217,6 @@ class CodeGenerator:
                 del utils.symbol_table['ids'][-1]
         self.current_scope -= 1
 
-    # Semantic Checks
-    def scope_check(self, lookahead):
-        if search_in_symbol_table(lookahead[2], self.current_scope):
-            return
-        utils.semantic_errors.append(f'#{lookahead[0]} : Semantic Error! {lookahead[2]} is not defined')
-
-    def void_check(self, var_id):
-        if self.id_type[2] == 'void':
-            utils.semantic_errors.append(f'#{self.id_type[0]} : Semantic Error! Illegal type of void for {var_id}')
-
-    def break_check(self, lookahead):
-        if len(self.break_stack) > 0 and ['>>>' in self.break_stack]:
-            return
-        utils.semantic_errors.append(f'#{lookahead[0]} : Semantic Error! No "while" or "switch" found for "break"')
-
-    def type_mismatch(self, lookahead):
-        pass
-
     # Function call and return
     def finish_function(self, lookahead):
         """in create_record we saved an instruction for now,
@@ -321,3 +303,21 @@ class CodeGenerator:
             self.PB[item[0]] = f'(ASSIGN, {item[1]}, {return_value}, )'
             self.PB[item[0] + 1] = f'(JP, @{return_address}, , )'
         self.return_stack = self.return_stack[:latest_func]
+
+    # Semantic Checks
+    def scope_check(self, lookahead):
+        if search_in_symbol_table(lookahead[2], self.current_scope):
+            return
+        utils.semantic_errors.append(f'#{lookahead[0]} : Semantic Error! {lookahead[2]} is not defined')
+
+    def void_check(self, var_id):
+        if self.id_type[2] == 'void':
+            utils.semantic_errors.append(f'#{self.id_type[0]} : Semantic Error! Illegal type of void for {var_id}')
+
+    def break_check(self, lookahead):
+        if len(self.break_stack) > 0 and ['>>>' in self.break_stack]:
+            return
+        utils.semantic_errors.append(f'#{lookahead[0]} : Semantic Error! No "while" or "switch" found for "break"')
+
+    def type_mismatch(self, lookahead):
+        pass
