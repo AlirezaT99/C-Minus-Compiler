@@ -237,7 +237,9 @@ class CodeGenerator:
         self.SS.append(f'#{self.index}')
 
     def create_record(self, lookahead):
-        return_value, return_address = self.get_temp(), self.get_temp()
+        return_address = self.get_temp()
+        current_index = self.index
+        return_value = self.get_temp()
         self.SS.append(return_value)
         self.SS.append(return_address)
         func_id = self.SS[-3]
@@ -247,7 +249,7 @@ class CodeGenerator:
         utils.symbol_table['ids'] \
             .append((func_id, 'function',
                      [return_value, func_args, return_address,
-                      self.index]))  # the last element is where we jump to on call
+                      current_index]))  # the last element is where we jump to on call
 
     # Manage returns
     def new_return(self, lookahead):
