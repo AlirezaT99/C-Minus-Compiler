@@ -6,8 +6,11 @@ class CodeGenerator:
         self.SS = list()
         self.PB = dict()
         self.break_stack = list()
+        self.return_stack = list()
+
         self.index = 0
         self.temp_address = 500
+
         self.operations_dict = {'+': 'ADD', '-': 'SUB', '<': 'LT', '==': 'EQ'}
 
     @staticmethod
@@ -128,6 +131,10 @@ class CodeGenerator:
 
     # Phase IV routines
     def get_temp_save(self, lookahead):
+        """saves the address for the first var to be assigned
+        which will be increased by 2 every time #for_statement is reached
+        so that every iteration starts at the next assign
+        """
         temp = self.get_temp()
         self.SS.append(temp)
         self.insert_code('ASSIGN', f'#{self.index + 3}', temp)
@@ -137,17 +144,27 @@ class CodeGenerator:
         self.index += 1
 
     def for_statement(self, lookahead):
+        """the last time that the temp is increased,
+        the program jumps to the line which jumps out of the loop
+        """
         self.insert_code('ADD', self.SS[-3], '#2', self.SS[-3])
         self.insert_code('JP', f'@{self.SS[-3]}')
         self.PB[self.SS[-1]] = f'(JP, {self.index}, , )'
         self.SS.pop(), self.SS.pop(), self.SS.pop()
 
     def assign_jump(self, lookahead):
+        """is called for each var that is about to be assigned to the loop var (i).
+        This function creates the assign command and then jumps to the
+        first statement in the loop body
+        """
         self.insert_code('ASSIGN', self.SS[-1], self.SS[-2])
         self.insert_code('JP', f'@{self.SS[-4]}')
         self.SS.pop()
 
     def jump_fill_save(self, lookahead):
+        """is called when all the assignments and their according jumps have been considered
+        and determines the address to jump to on each iteration
+        """
         self.PB[int(self.SS[-2])] = f'(ASSIGN, #{self.index + 1}, {self.SS[-3]}, )'
         self.SS.pop(), self.SS.pop()
         self.SS.append(self.index)
@@ -169,3 +186,90 @@ class CodeGenerator:
         for item in self.break_stack[latest_block + 1:]:
             self.PB[item] = f'(JP, {self.index}, , )'
         self.break_stack = self.break_stack[:latest_block]
+
+    # Function call and return
+    def finish_function(self, lookahead):
+        """in create_record we saved an instruction for now,
+        so that non-main functions are jumped over.
+        Also, we need to clean up the mess we've made in SS.
+        """
+        self.SS.pop(), self.SS.pop(), self.SS.pop()
+        # all this shit only to exclude main from being jumped over
+        for item in utils.symbol_table['ids'][::-1]:
+            if item[1] == 'function':
+                if item[0] == 'main':
+                    self.PB[self.SS.pop()] = f'(ASSIGN, #0, {self.get_temp()}, )'
+                    return
+                break
+        self.PB[self.SS.pop()] = f'(JP, {self.index}, , )'
+
+    def call_function(self, lookahead):
+        if self.SS[-1] != 'output':
+            args, attributes = [], []
+            for item in self.SS[::-1]:
+                if isinstance(item, list):
+                    attributes = item
+                    break
+                args = [item] + args
+            # assign each arg
+            for var, arg in zip(attributes[1], args):
+                self.insert_code('ASSIGN', arg, var[2])
+                self.SS.pop()  # pop each arg
+            self.SS.pop()  # pop func attributes
+            # set return address
+            self.insert_code('ASSIGN', f'#{self.index + 2}', attributes[2])
+            # jump
+            self.insert_code('JP', attributes[-1])
+            # save result to temp
+            result = self.get_temp()
+            self.insert_code('ASSIGN', attributes[0], result)
+            self.SS.append(result)
+
+    def start_params(self, lookahead):
+        func_attr = self.SS.pop()
+        self.SS.append(self.index)  # to jump over for non-main functions
+        self.index += 1
+        self.SS.append(func_attr)
+        # mark the table before adding args
+        utils.symbol_table['ids'].append('>>')
+
+    def push_index(self, lookahead):
+        self.SS.append(f'#{self.index}')
+
+    def create_record(self, lookahead):
+        return_address = self.get_temp()
+        current_index = self.index
+        return_value = self.get_temp()
+        self.SS.append(return_value)
+        self.SS.append(return_address)
+        func_id = self.SS[-3]
+        args_start_idx = utils.symbol_table['ids'].index('>>')
+        func_args = utils.symbol_table['ids'][args_start_idx + 1:]
+        utils.symbol_table['ids'].pop(args_start_idx)
+        utils.symbol_table['ids'] \
+            .append((func_id, 'function',
+                     [return_value, func_args, return_address,
+                      current_index]))  # the last element is where we jump to on call
+
+    # Manage returns
+    def new_return(self, lookahead):
+        self.return_stack.append('>>>')
+
+    def save_return(self, lookahead):
+        self.return_stack.append((self.index, self.SS[-1]))
+        self.SS.pop()
+        self.index += 2
+
+    def return_anyway(self, lookahead):
+        if self.SS[-3] != 'main':
+            return_address = self.SS[-1]
+            self.insert_code('JP', f'@{return_address}')
+
+    def end_return(self, lookahead):
+        latest_func = len(self.return_stack) - self.return_stack[::-1].index('>>>') - 1
+        return_value = self.SS[-2]
+        return_address = self.SS[-1]
+        for item in self.return_stack[latest_func + 1:]:
+            self.PB[item[0]] = f'(ASSIGN, {item[1]}, {return_value}, )'
+            self.PB[item[0] + 1] = f'(JP, @{return_address}, , )'
+        self.return_stack = self.return_stack[:latest_func]
