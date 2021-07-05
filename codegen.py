@@ -270,7 +270,7 @@ class CodeGenerator:
     def create_record(self, lookahead):
         """adds the function and its attributes to the symbol table"""
         return_address = self.get_temp()
-        current_index = self.index
+        current_index = self.index  # where we jump to on call
         return_value = self.get_temp()
         self.SS.append(return_value)
         self.SS.append(return_address)
@@ -279,9 +279,7 @@ class CodeGenerator:
         func_args = utils.symbol_table['ids'][args_start_idx + 1:]
         utils.symbol_table['ids'].pop(args_start_idx)
         utils.symbol_table['ids'] \
-            .append((func_id, 'function',
-                     [return_value, func_args, return_address,
-                      current_index]))  # the last element is where we jump to on call
+            .append((func_id, 'function', [return_value, func_args, return_address, current_index], self.current_scope))
 
     # Manage returns
     def new_return(self, lookahead):
