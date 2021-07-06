@@ -17,7 +17,6 @@ class CodeGenerator:
         self.return_stack = list()
         self.index = 0
         self.temp_address = 500
-        self.array_define = False
 
         self.operations_dict = {'+': 'ADD', '-': 'SUB', '<': 'LT', '==': 'EQ'}
 
@@ -50,11 +49,7 @@ class CodeGenerator:
         self.void_check(var_id)
 
         address = self.get_temp()
-        if self.array_define:
-            utils.symbol_table['ids'].append((var_id, 'int*', address, self.current_scope))
-            self.array_define = False
-        else:
-            utils.symbol_table['ids'].append((var_id, 'int', address, self.current_scope))
+        utils.symbol_table['ids'].append((var_id, 'int', address, self.current_scope))
 
     def define_array(self, lookahead):
         array_size, array_id = int(self.SS.pop()[1:]), self.SS.pop()
@@ -107,7 +102,9 @@ class CodeGenerator:
         self.SS.append(result_address)
 
     def define_array_argument(self, lookahead):
-        self.array_define = True
+        temp = utils.symbol_table['ids'][-1]
+        del utils.symbol_table['ids'][-1]
+        utils.symbol_table['ids'].append((temp[0], 'int*', temp[2], temp[3]))
 
     def array_index(self, lookahead):
         idx, array_address = self.SS.pop(), self.SS.pop()
@@ -337,9 +334,12 @@ class CodeGenerator:
     def break_check(self, lookahead):
         if len(self.break_stack) > 0 and ['>>>' in self.break_stack]:
             return
-        utils.semantic_errors.append(f'#{lookahead[0]-1} : Semantic Error! No \'while\' or \'for\' found for \'break\'.')
+        utils.semantic_errors.append(
+            f'#{lookahead[0] - 1} : Semantic Error! No \'while\' or \'for\' found for \'break\'.')
 
     def type_mismatch(self, lookahead, operand_1, operand_2):
+        # print(operand_1,operand_2)
+
         if operand_2 is None or operand_1 is None:
             return
         operand_2_type = 'int'

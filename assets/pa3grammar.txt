@@ -10,14 +10,14 @@ Var-declaration-prime -> [ #push_num NUM ] ; #define_array
 Fun-declaration-prime -> #start_params ( Params ) #create_record #new_return Compound-stmt #end_return #return_anyway #finish_function
 Type-specifier -> int
 Type-specifier -> void
-Params -> int #push_id ID #define_variable Param-prime Param-list
+Params -> #get_id_type int #push_id ID #define_variable Param-prime Param-list
 Params -> void Param-list-void-abtar
 Param-list-void-abtar -> ID Param-prime Param-list
 Param-list-void-abtar -> EPSILON
 Param-list -> , Param #define_variable Param-list
 Param-list -> EPSILON
 Param -> Declaration-initial Param-prime
-Param-prime -> [ ] #define_array_argument
+Param-prime -> #define_array_argument [ ]
 Param-prime -> EPSILON
 Compound-stmt -> #push_scope { Declaration-list Statement-list } #pop_scope
 Statement-list -> Statement Statement-list
