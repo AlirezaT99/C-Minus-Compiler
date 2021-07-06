@@ -17,7 +17,7 @@ Param-list-void-abtar -> EPSILON
 Param-list -> , Param #define_variable Param-list
 Param-list -> EPSILON
 Param -> Declaration-initial Param-prime
-Param-prime -> [ ]
+Param-prime -> [ ] #define_array_argument
 Param-prime -> EPSILON
 Compound-stmt -> #push_scope { Declaration-list Statement-list } #pop_scope
 Statement-list -> Statement Statement-list

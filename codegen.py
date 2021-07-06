@@ -17,6 +17,7 @@ class CodeGenerator:
         self.return_stack = list()
         self.index = 0
         self.temp_address = 500
+        self.array_define = False
 
         self.operations_dict = {'+': 'ADD', '-': 'SUB', '<': 'LT', '==': 'EQ'}
 
@@ -31,9 +32,6 @@ class CodeGenerator:
                 return record[2]
 
     def call_routine(self, name, lookahead):
-        # if len(self.PB)>1:
-        #     print(name,lookahead)
-        #     print(self.PB)
         self.__getattribute__(name[1:])(lookahead)
 
     def insert_code(self, part1, part2, part3='', part4=''):
@@ -52,7 +50,11 @@ class CodeGenerator:
         self.void_check(var_id)
 
         address = self.get_temp()
-        utils.symbol_table['ids'].append((var_id, 'int', address, self.current_scope))
+        if self.array_define:
+            utils.symbol_table['ids'].append((var_id, 'int*', address, self.current_scope))
+            self.array_define = False
+        else:
+            utils.symbol_table['ids'].append((var_id, 'int', address, self.current_scope))
 
     def define_array(self, lookahead):
         array_size, array_id = int(self.SS.pop()[1:]), self.SS.pop()
@@ -86,6 +88,7 @@ class CodeGenerator:
         operand_1 = self.SS.pop()
 
         address = self.get_temp()
+
         self.insert_code(self.operations_dict[operator], operand_1, operand_2, address)
 
         self.SS.append(address)
@@ -101,6 +104,9 @@ class CodeGenerator:
         self.SS.pop()
         self.SS.pop()
         self.SS.append(result_address)
+
+    def define_array_argument(self, lookahead):
+        self.array_define = True
 
     def array_index(self, lookahead):
         idx, array_address = self.SS.pop(), self.SS.pop()
@@ -239,10 +245,14 @@ class CodeGenerator:
                     attributes = item
                     break
                 args = [item] + args
+            self.parameter_num_matching(lookahead, args, attributes)
             # assign each arg
             for var, arg in zip(attributes[1], args):
+                self.parameter_type_matching(lookahead, var, arg, attributes[1].index(var) + 1)
                 self.insert_code('ASSIGN', arg, var[2])
                 self.SS.pop()  # pop each arg
+            for i in range(len(args) - len(attributes[1])):
+                self.SS.pop()
             self.SS.pop()  # pop func attributes
             # set return address
             self.insert_code('ASSIGN', f'#{self.index + 2}', attributes[2])
@@ -315,9 +325,9 @@ class CodeGenerator:
 
     # Semantic Checks
     def scope_check(self, lookahead):
-        if search_in_symbol_table(lookahead[2], self.current_scope):
+        if search_in_symbol_table(lookahead[2], self.current_scope) or lookahead[2] == 'output':
             return
-        utils.semantic_errors.append(f'#{lookahead[0]} : Semantic Error! {lookahead[2]} is not defined')
+        utils.semantic_errors.append(f'#{lookahead[0]} : Semantic Error! \'{lookahead[2]}\' is not defined')
 
     def void_check(self, var_id):
         if self.id_type[2] == 'void':
@@ -331,6 +341,35 @@ class CodeGenerator:
     def type_mismatch(self, lookahead):
         pass
 
+    def parameter_num_matching(self, lookahead, args, attributes):
+        func_args = []
+        for i in attributes:
+            if isinstance(i, list):
+                func_args = i
+        if len(func_args) != len(args):
+            utils.semantic_errors.append(
+                f'#{lookahead[0]} : Semantic Error! Mismatch in number of arguments of \'{lookahead[2]}\'')
+
+    def parameter_type_matching(self, lookahead, var, arg, num):
+        if arg.startswith('#'):
+            if var[1] != 'int':
+                utils.semantic_errors.append(
+                    f'#{lookahead[0]} : Semantic Error! Mismatch in type of argument {num} for \'{self.get_func_name(var)}\'.Expected \'{var[1]}\' but got \'int\'.')
+        else:
+            for rec in utils.symbol_table['ids']:
+                if rec[2] == arg and rec[1] != var[1]:
+                    type = 'array' if rec[1] == 'int*' else rec[1]
+                    utils.semantic_errors.append(
+                        f'#{lookahead[0]} : Semantic Error! Mismatch in type of argument {num} for \'{self.get_func_name(var)}\'.Expected \'{var[1]}\' but got \'{type}\'.')
+
+    def get_func_name(self, var):
+        for rec in utils.symbol_table['ids']:
+            if rec[1] == 'function':
+                for arg in rec[2][1]:
+                    if arg[2] == var[2]:
+                        return rec[0]
+
+    # scoping
     def push_scope(self, lookahead):
         self.current_scope += 1
 

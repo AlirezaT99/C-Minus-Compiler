@@ -114,6 +114,14 @@ def init_grammar():
             grammar[idx + 1] = rhs.strip().split(' ')
 
 
+def save_semantic_errors():
+    with open('semantic_errors.txt', 'w') as f:
+        for idx in semantic_errors:
+            f.write(f'{idx}\n')
+    with open('output.txt', 'w') as f:
+        f.write('The code has not been generated.')
+
+
 def save_program(code_gen):
     with open('output.txt', 'w') as f:
         for idx in sorted(code_gen.PB.keys()):
