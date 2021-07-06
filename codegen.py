@@ -87,8 +87,9 @@ class CodeGenerator:
         operator = self.SS.pop()
         operand_1 = self.SS.pop()
 
-        address = self.get_temp()
+        self.type_mismatch(lookahead, operand_1, operand_2)
 
+        address = self.get_temp()
         self.insert_code(self.operations_dict[operator], operand_1, operand_2, address)
 
         self.SS.append(address)
@@ -327,40 +328,65 @@ class CodeGenerator:
     def scope_check(self, lookahead):
         if search_in_symbol_table(lookahead[2], self.current_scope) or lookahead[2] == 'output':
             return
-        utils.semantic_errors.append(f'#{lookahead[0]} : Semantic Error! \'{lookahead[2]}\' is not defined')
+        utils.semantic_errors.append(f'#{lookahead[0]} : Semantic Error! \'{lookahead[2]}\' is not defined.')
 
     def void_check(self, var_id):
         if self.id_type[2] == 'void':
-            utils.semantic_errors.append(f'#{self.id_type[0]} : Semantic Error! Illegal type of void for {var_id}')
+            utils.semantic_errors.append(f'#{self.id_type[0]} : Semantic Error! Illegal type of void for \'{var_id}\'.')
 
     def break_check(self, lookahead):
         if len(self.break_stack) > 0 and ['>>>' in self.break_stack]:
             return
-        utils.semantic_errors.append(f'#{lookahead[0]} : Semantic Error! No "while" or "switch" found for "break"')
+        utils.semantic_errors.append(f'#{lookahead[0]-1} : Semantic Error! No \'while\' or \'for\' found for \'break\'.')
 
-    def type_mismatch(self, lookahead):
-        pass
+    def type_mismatch(self, lookahead, operand_1, operand_2):
+        if operand_2 is None or operand_1 is None:
+            return
+        operand_2_type = 'int'
+        operand_1_type = 'int'
+        if not operand_1.startswith('#'):
+            for s in utils.symbol_table['ids']:
+                if s[2] == operand_1:
+                    operand_1_type = s[1]
+                    break
+        if not operand_2.startswith('#'):
+            for s in utils.symbol_table['ids']:
+                if s[2] == operand_2:
+                    operand_2_type = s[1]
+                    break
+
+        if operand_2_type != operand_1_type:
+            operand_1_type = 'array' if operand_1_type == 'int*' else operand_1_type
+            operand_2_type = 'array' if operand_2_type == 'int*' else operand_2_type
+            utils.semantic_errors.append(
+                f'#{lookahead[0]} : Semantic Error! Type mismatch in operands, Got {operand_2_type} instead of {operand_1_type}.')
 
     def parameter_num_matching(self, lookahead, args, attributes):
+        func_name = ''
+        for i in utils.symbol_table['ids']:
+            if i[2] == attributes:
+                func_name = i[0]
         func_args = []
         for i in attributes:
             if isinstance(i, list):
                 func_args = i
         if len(func_args) != len(args):
             utils.semantic_errors.append(
-                f'#{lookahead[0]} : Semantic Error! Mismatch in number of arguments of \'{lookahead[2]}\'')
+                f'#{lookahead[0]} : Semantic Error! Mismatch in numbers of arguments of \'{func_name}\'.')
 
     def parameter_type_matching(self, lookahead, var, arg, num):
         if arg.startswith('#'):
             if var[1] != 'int':
+                var_type = 'array' if var[1] == 'int*' else var[1]
                 utils.semantic_errors.append(
-                    f'#{lookahead[0]} : Semantic Error! Mismatch in type of argument {num} for \'{self.get_func_name(var)}\'.Expected \'{var[1]}\' but got \'int\'.')
+                    f'#{lookahead[0]} : Semantic Error! Mismatch in type of argument {num} of \'{self.get_func_name(var)}\'. Expected \'{var_type}\' but got \'int\' instead.')
         else:
             for rec in utils.symbol_table['ids']:
                 if rec[2] == arg and rec[1] != var[1]:
                     type = 'array' if rec[1] == 'int*' else rec[1]
+                    var_type = 'array' if var[1] == 'int*' else var[1]
                     utils.semantic_errors.append(
-                        f'#{lookahead[0]} : Semantic Error! Mismatch in type of argument {num} for \'{self.get_func_name(var)}\'.Expected \'{var[1]}\' but got \'{type}\'.')
+                        f'#{lookahead[0]} : Semantic Error! Mismatch in type of argument {num} of \'{self.get_func_name(var)}\'. Expected \'{var_type}\' but got \'{type}\' instead.')
 
     def get_func_name(self, var):
         for rec in utils.symbol_table['ids']:
